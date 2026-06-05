@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <title>LittleNotepad</title>
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="icon" href="icon-128.png" sizes="128x128" type="image/png">
+  <link rel="icon" href="icon-32.png" sizes="32x32" type="image/png">
+  <link rel="stylesheet" href="styles/theme.css">
+  <link rel="stylesheet" href="styles/layout.css">
+</head>
+<body>
+
+  <div id="toolbar">
+    <div id="toolbar-left">
+      <button id="btn-new-file" class="toolbar-btn" title="New File (Ctrl+N)">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M9 1H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V6L9 1zm0 1.5L13.5 7H10a1 1 0 0 1-1-1V2.5zM4 14a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h4v4a2 2 0 0 0 2 2h4v6a1 1 0 0 1-1 1H4z"/>
+        </svg>
+      </button>
+      <button id="btn-new-folder" class="toolbar-btn" title="New Folder">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M1 3.5A1.5 1.5 0 0 1 2.5 2h2.764c.958 0 1.76.56 2.118 1.382l.083.207.097.232H13.5A1.5 1.5 0 0 1 15 5.5v7a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 1 12.5v-9z"/>
+          <path d="M8 7.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V12a.5.5 0 0 1-1 0v-1.5H6a.5.5 0 0 1 0-1h1.5V8a.5.5 0 0 1 .5-.5z"/>
+        </svg>
+      </button>
+    </div>
+    <div id="toolbar-right">
+      <button id="btn-split" class="toolbar-btn" title="Split Editor (Ctrl+\)">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M2 2a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1H2zm6 11H2V3h6v10zm1 0V3h5v10H9z"/>
+        </svg>
+      </button>
+      <button id="btn-apps" class="toolbar-btn" title="Apps">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M1 2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V2zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V2zM1 7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V7zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V7zM1 12a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-2zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-2zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1v-2z"/>
+        </svg>
+      </button>
+      <button id="btn-updates" class="toolbar-btn" title="Check for Updates">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm0-1a8 8 0 1 1 0 16A8 8 0 0 1 8 0z"/>
+          <path d="M8 4.5a.5.5 0 0 1 .5.5v3.793l1.146-1.147a.5.5 0 0 1 .708.708l-2 2a.5.5 0 0 1-.708 0l-2-2a.5.5 0 0 1 .708-.708L7.5 8.793V5a.5.5 0 0 1 .5-.5z"/>
+        </svg>
+      </button>
+      <button id="btn-help" class="toolbar-btn" title="Help">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+          <path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z"/>
+        </svg>
+      </button>
+      <button id="btn-settings" class="toolbar-btn" title="Settings">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492zM5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0z"/>
+          <path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52l-.094-.319zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.475l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115l.094-.319z"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div id="app">
+
+    <aside id="sidebar">
+      <div id="sidebar-header">
+        <span id="sidebar-title">EXPLORER</span>
+        <div class="sidebar-header-actions">
+          <button id="btn-open-file" class="icon-btn" title="Open File (Ctrl+O)">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M9.5 1h-6A1.5 1.5 0 0 0 2 2.5v11A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V6L9.5 1zm0 1.5 4 4h-3.5a.5.5 0 0 1-.5-.5V2.5zm-6 11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H8V5.5A1.5 1.5 0 0 0 9.5 7H13v6.5a.5.5 0 0 1-.5.5h-9z"/>
+            </svg>
+          </button>
+          <button id="btn-open-folder" class="icon-btn" title="Open Folder (Ctrl+K Ctrl+O)">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M1 3.5A1.5 1.5 0 0 1 2.5 2h2.764c.958 0 1.76.56 2.118 1.382l.083.207.097.232H13.5A1.5 1.5 0 0 1 15 5.5v7a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 1 12.5v-9z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div id="sidebar-empty">
+        <p>No folder or file open</p>
+        <button id="btn-open-folder-2">Open Folder</button>
+        <button id="btn-open-file-2">Open File</button>
+      </div>
+      <div id="workspace-root" style="display:none">
+        <div id="workspace-header">
+          <div id="workspace-name"></div>
+          <button id="btn-close-folder" class="icon-btn" title="Close Folder">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+              <path d="M1 1l10 10M11 1L1 11"/>
+            </svg>
+          </button>
+        </div>
+        <div id="file-tree"></div>
+      </div>
+      <div id="sidebar-resize-handle"></div>
+    </aside>
+
+    <main id="main-area">
+      <div id="tab-bar">
+        <div id="tab-list"></div>
+        <div id="tab-bar-actions"></div>
+      </div>
+
+      <!-- Breadcrumb bar -->
+      <div id="breadcrumb-bar" style="display:none">
+        <div id="breadcrumb-content"></div>
+      </div>
+
+      <div id="editor-panel">
+        <div id="editor-pane-a" class="editor-pane editor-pane--focused">
+        <div id="file-changed-banner" style="display:none">
+          <span id="file-changed-msg">This file has been modified outside the editor.</span>
+          <button id="file-changed-reload">Reload</button>
+          <button id="file-changed-dismiss">Dismiss</button>
+        </div>
+        <div id="editor-welcome">
+          <div class="welcome-pane welcome-pane--left">
+            <div id="recent-folders">
+              <div class="recent-title">RECENT</div>
+              <div id="recent-list"></div>
+              <div id="recent-empty" class="recent-empty">No recent folders</div>
+            </div>
+          </div>
+          <div class="welcome-pane welcome-pane--right">
+            <div class="welcome-content">
+              <div class="welcome-logo">LittleNotepad</div>
+              <div class="welcome-hint">Open a folder to start editing</div>
+              <div class="welcome-shortcuts">
+                <div class="shortcut-row"><kbd>Ctrl+K O</kbd><span>Open Folder</span></div>
+                <div class="shortcut-row"><kbd>Ctrl+O</kbd><span>Open File</span></div>
+                <div class="shortcut-row"><kbd>Ctrl+Shift+P</kbd><span>Command Palette</span></div>
+                <div class="shortcut-row"><kbd>Ctrl+`</kbd><span>Toggle Terminal</span></div>
+                <div class="shortcut-row"><kbd>Ctrl+F</kbd><span>Find / Replace</span></div>
+                <div class="shortcut-row"><kbd>Ctrl+Shift+F</kbd><span>Find in Files</span></div>
+                <div class="shortcut-row"><kbd>Ctrl+G</kbd><span>Go to Line</span></div>
+                <div class="shortcut-row"><kbd>Ctrl+?</kbd><span>Keyboard Shortcuts</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="editor-wrapper" style="display:none">
+          <div id="line-numbers" aria-hidden="true"></div>
+          <div id="fold-gutter" aria-hidden="true"></div>
+          <div id="code-area">
+            <pre id="editor-highlight" aria-hidden="true"><code id="highlight-code"></code></pre>
+            <textarea
+              id="editor-textarea"
+              spellcheck="false"
+              autocorrect="off"
+              autocapitalize="off"
+              autocomplete="off"
+              data-gramm="false"
+              wrap="off"
+            ></textarea>
+            <div id="column-ruler" aria-hidden="true"></div>
+          </div>
+          <div id="minimap">
+            <canvas id="minimap-canvas" width="80"></canvas>
+            <div id="minimap-viewport"></div>
+          </div>
+          <div id="md-preview-divider"></div>
+          <div id="md-preview"></div>
+        </div>
+
+        <div id="find-panel" style="display:none">
+          <button id="find-toggle-replace" class="icon-btn find-toggle-btn" title="Toggle Replace (Ctrl+H)">›</button>
+          <div id="find-fields">
+            <div id="find-row">
+              <input id="find-input" type="text" placeholder="Find" autocomplete="off" spellcheck="false">
+              <span id="find-count"></span>
+              <button id="find-prev" class="icon-btn" title="Previous (Shift+Enter)">↑</button>
+              <button id="find-next" class="icon-btn" title="Next (Enter)">↓</button>
+              <button id="find-close" class="icon-btn" title="Close (Escape)">✕</button>
+            </div>
+            <div id="replace-row" style="display:none">
+              <input id="replace-input" type="text" placeholder="Replace" autocomplete="off" spellcheck="false">
+              <button id="replace-btn">Replace</button>
+              <button id="replace-all-btn">All</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="goto-overlay" style="display:none">
+          <div id="goto-container">
+            <input id="goto-input" type="text" placeholder="Go to line…" autocomplete="off" spellcheck="false">
+          </div>
+        </div>
+        </div><!-- #editor-pane-a -->
+
+        <div id="pane-split-handle" style="display:none"></div>
+
+        <div id="editor-pane-b" class="editor-pane" style="display:none">
+          <div id="pane-b-header">
+            <span id="pane-b-filename">No file open</span>
+            <button id="pane-b-close" class="icon-btn" title="Close pane">✕</button>
+          </div>
+          <div id="editor-wrapper-b">
+            <div id="line-numbers-b" aria-hidden="true"></div>
+            <div id="code-area-b">
+              <pre id="editor-highlight-b" aria-hidden="true"><code id="highlight-code-b"></code></pre>
+              <textarea
+                id="editor-textarea-b"
+                spellcheck="false"
+                autocorrect="off"
+                autocapitalize="off"
+                autocomplete="off"
+                data-gramm="false"
+                wrap="off"
+              ></textarea>
+            </div>
+          </div>
+        </div><!-- #editor-pane-b -->
+      </div><!-- #editor-panel -->
+
+      <!-- Problems panel (LSP diagnostics) -->
+      <div id="problems-panel" style="display:none">
+        <div id="problems-bar">
+          <span id="problems-title">PROBLEMS</span>
+          <span id="problems-count"></span>
+          <button id="problems-close" class="icon-btn" title="Close Problems">×</button>
+        </div>
+        <div id="problems-list"></div>
+      </div>
+
+      <!-- Autocomplete popup -->
+      <div id="autocomplete-popup" style="display:none"></div>
+
+      <div id="terminal-panel" style="display:none">
+        <div id="terminal-resize-handle"></div>
+        <div id="terminal-bar">
+          <div id="terminal-tabs"></div>
+          <div id="terminal-actions">
+            <button id="btn-new-terminal" class="icon-btn" title="New Terminal">+</button>
+            <button id="btn-close-terminal" class="icon-btn" title="Close Terminal">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+                <path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div id="terminal-body">
+          <div id="terminal-output"></div>
+          <div id="terminal-input-row">
+            <span id="terminal-prompt">$ </span>
+            <input id="terminal-input" type="text" autocomplete="off" autocorrect="off" spellcheck="false">
+          </div>
+        </div>
+      </div>
+    </main>
+
+  </div>
+
+  <div id="status-bar">
+    <div id="status-left">
+      <span id="status-branch" title="Source Control"></span>
+    </div>
+    <div id="status-right">
+      <span id="status-lsp" title="LSP diagnostics" style="display:none;cursor:pointer"></span>
+      <span id="status-wordcount"></span>
+      <span id="status-cursor">Ln 1, Col 1</span>
+      <span id="status-wrap" title="Toggle Word Wrap (Alt+Z)">Wrap: Off</span>
+      <span id="status-lang">Plain Text</span>
+      <span id="status-encoding">UTF-8</span>
+    </div>
+  </div>
+
+  <div id="command-palette" style="display:none">
+    <div id="palette-backdrop"></div>
+    <div id="palette-container">
+      <input id="palette-input" type="text" placeholder="Type a command…" autocomplete="off" spellcheck="false">
+      <ul id="palette-results"></ul>
+    </div>
+  </div>
+
+  <div id="global-find" style="display:none">
+    <div id="global-find-backdrop"></div>
+    <div id="global-find-container">
+      <div id="global-find-header">
+        <input id="global-find-input" type="text" placeholder="Search in files…" autocomplete="off" spellcheck="false">
+        <button id="global-find-close" class="icon-btn" title="Close (Escape)">✕</button>
+      </div>
+      <div id="global-find-results"></div>
+    </div>
+  </div>
+
+  <!-- Settings overlay -->
+  <div id="settings-overlay" style="display:none">
+    <div id="settings-backdrop"></div>
+    <div id="settings-panel">
+      <div id="settings-header">
+        <span>Settings</span>
+        <div class="settings-header-right">
+          <button id="settings-reset" class="settings-reset-btn" title="Reset all settings to defaults">Reset to Defaults</button>
+          <button id="settings-close" class="icon-btn" title="Close">✕</button>
+        </div>
+      </div>
+      <div id="settings-search-bar">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor" style="flex-shrink:0;opacity:0.5"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.656a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/></svg>
+        <input id="settings-search" type="text" placeholder="Search settings…" autocomplete="off" spellcheck="false">
+        <button id="settings-search-clear" style="display:none">✕</button>
+      </div>
+      <div id="settings-layout">
+        <nav id="settings-tabs">
+          <button class="settings-tab active" data-tab="appearance">Appearance</button>
+          <button class="settings-tab" data-tab="editor">Editor</button>
+          <button class="settings-tab" data-tab="terminal">Terminal</button>
+          <button class="settings-tab" data-tab="updates">Updates</button>
+          <button class="settings-tab" data-tab="autosave">Auto Save</button>
+        </nav>
+        <div id="settings-body">
+
+          <!-- Appearance -->
+          <div class="settings-page active" data-page="appearance">
+            <div class="settings-section-title">Theme</div>
+
+            <div class="setting-row">
+              <label class="setting-label">Color Theme</label>
+              <div class="setting-control">
+                <div class="seg-group">
+                  <button class="seg-btn" data-setting="theme" data-val="dark">Dark</button>
+                  <button class="seg-btn" data-setting="theme" data-val="dark-plus">One Dark</button>
+                  <button class="seg-btn" data-setting="theme" data-val="monokai">Monokai</button>
+                  <button class="seg-btn" data-setting="theme" data-val="light">Light</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Editor -->
+          <div class="settings-page" data-page="editor">
+            <div class="settings-section-title">Font</div>
+
+            <div class="setting-row">
+              <label class="setting-label">Font Size</label>
+              <div class="setting-control font-size-control">
+                <button id="setting-font-decr" class="seg-btn">−</button>
+                <input id="setting-font-size" type="number" min="8" max="40" value="14">
+                <button id="setting-font-incr" class="seg-btn">+</button>
+              </div>
+            </div>
+
+            <div class="settings-section-title">Indentation</div>
+
+            <div class="setting-row">
+              <label class="setting-label">Tab Width</label>
+              <div class="setting-control">
+                <div class="seg-group">
+                  <button class="seg-btn" data-setting="tabSize" data-val="2">2</button>
+                  <button class="seg-btn" data-setting="tabSize" data-val="4">4</button>
+                  <button class="seg-btn" data-setting="tabSize" data-val="8">8</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="setting-row">
+              <label class="setting-label">Indent With</label>
+              <div class="setting-control">
+                <div class="seg-group">
+                  <button class="seg-btn" data-setting="indentType" data-val="spaces">Spaces</button>
+                  <button class="seg-btn" data-setting="indentType" data-val="tabs">Tabs</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="settings-section-title">Display</div>
+
+            <div class="setting-row">
+              <label class="setting-label">Word Wrap</label>
+              <div class="setting-control">
+                <label class="toggle-label">
+                  <input id="setting-word-wrap" type="checkbox">
+                  <span class="toggle-track"><span class="toggle-thumb"></span></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-row">
+              <label class="setting-label">Markdown Preview</label>
+              <div class="setting-control">
+                <label class="toggle-label">
+                  <input id="setting-md-preview" type="checkbox">
+                  <span class="toggle-track"><span class="toggle-thumb"></span></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-row">
+              <label class="setting-label">Column Ruler</label>
+              <div class="setting-control">
+                <div class="seg-group">
+                  <button class="seg-btn" data-setting="rulerCol" data-val="0">Off</button>
+                  <button class="seg-btn" data-setting="rulerCol" data-val="80">80</button>
+                  <button class="seg-btn" data-setting="rulerCol" data-val="120">120</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Terminal -->
+          <div class="settings-page" data-page="terminal">
+            <div class="settings-section-title">Font</div>
+
+            <div class="setting-row">
+              <label class="setting-label">Font Size</label>
+              <div class="setting-control font-size-control">
+                <button id="setting-term-font-decr" class="seg-btn">−</button>
+                <input id="setting-term-font-size" type="number" min="8" max="40" value="13">
+                <button id="setting-term-font-incr" class="seg-btn">+</button>
+              </div>
+            </div>
+
+            <div class="settings-section-title">Startup</div>
+
+            <div class="setting-row" id="setting-default-shell-row">
+              <label class="setting-label">Default shell</label>
+              <div class="setting-control">
+                <select id="setting-default-shell" class="settings-select"></select>
+              </div>
+            </div>
+
+            <div class="setting-row">
+              <label class="setting-label">Launch terminal on startup</label>
+              <div class="setting-control">
+                <label class="toggle-label">
+                  <input id="setting-launch-terminal" type="checkbox">
+                  <span class="toggle-track"><span class="toggle-thumb"></span></span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Updates -->
+          <div class="settings-page" data-page="updates">
+            <div class="settings-section-title">Update channel</div>
+
+            <div class="channel-card" id="channel-card-stable" data-channel="stable">
+              <div class="channel-card-header">
+                <span class="channel-radio" id="channel-radio-stable"></span>
+                <span class="channel-card-name">Stable</span>
+              </div>
+              <div class="channel-card-desc">Tagged releases only. The default for everyone.</div>
+            </div>
+
+            <div class="channel-card" id="channel-card-beta" data-channel="beta">
+              <div class="channel-card-header">
+                <span class="channel-radio" id="channel-radio-beta"></span>
+                <span class="channel-card-name">Beta (experimental)</span>
+              </div>
+              <div class="channel-card-desc">Pre-release builds from main. Faster fixes, more bugs. Some beta builds may never ship to stable.</div>
+            </div>
+
+            <div id="channel-beta-warning" class="channel-warning" style="display:none">
+              <div class="channel-warning-title">&#x26A0; Heads up</div>
+              <ul>
+                <li>Beta builds can have bugs that never ship to stable.</li>
+                <li>Switching back to Stable will stop new betas, but the installed beta version stays put — uninstall and reinstall the latest stable build to revert.</li>
+                <li>When reporting issues, include the version + channel from the About dialog.</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Auto Save -->
+          <div class="settings-page" data-page="autosave">
+            <div class="settings-section-title">Auto Save</div>
+
+            <div class="setting-row">
+              <label class="setting-label">Enable Auto Save</label>
+              <div class="setting-control">
+                <label class="toggle-label">
+                  <input id="setting-autosave-enabled" type="checkbox">
+                  <span class="toggle-track"><span class="toggle-thumb"></span></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-row" id="setting-autosave-interval-row">
+              <label class="setting-label">Save interval (seconds)</label>
+              <div class="setting-control font-size-control">
+                <button id="setting-autosave-decr" class="seg-btn">−</button>
+                <input id="setting-autosave-interval" type="number" min="5" max="600" value="30">
+                <button id="setting-autosave-incr" class="seg-btn">+</button>
+              </div>
+            </div>
+
+            <div class="settings-section-title">Autosave Folder</div>
+
+            <div class="setting-row">
+              <label class="setting-label">Custom path</label>
+              <div class="setting-control">
+                <input id="setting-autosave-path" type="text" class="settings-text-input" placeholder="Leave blank for default location…" autocomplete="off" spellcheck="false">
+              </div>
+            </div>
+
+            <div class="autosave-path-block">
+              <div class="autosave-path-label">AUTOSAVE LOCATION</div>
+              <div class="autosave-path-value" id="autosave-resolved-path">—</div>
+            </div>
+          </div>
+
+          <div id="settings-no-results" style="display:none">No settings match your search.</div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Keyboard shortcuts overlay -->
+  <div id="shortcuts-overlay" style="display:none">
+    <div id="shortcuts-backdrop"></div>
+    <div id="shortcuts-panel">
+      <div id="shortcuts-header">
+        <span>Keyboard Shortcuts</span>
+        <button id="shortcuts-close" class="icon-btn" title="Close">✕</button>
+      </div>
+      <div id="shortcuts-body">
+        <div class="shortcuts-col">
+          <div class="shortcuts-group-title">File</div>
+          <div class="shortcuts-row"><kbd>Ctrl+N</kbd><span>New File</span></div>
+          <div class="shortcuts-row"><kbd>Ctrl+O</kbd><span>Open File</span></div>
+          <div class="shortcuts-row"><kbd>Ctrl+K O</kbd><span>Open Folder</span></div>
+          <div class="shortcuts-row"><kbd>Ctrl+S</kbd><span>Save</span></div>
+          <div class="shortcuts-row"><kbd>Ctrl+Shift+S</kbd><span>Save As</span></div>
+          <div class="shortcuts-row"><kbd>Ctrl+W</kbd><span>Close Tab</span></div>
+
+          <div class="shortcuts-group-title">Edit</div>
+          <div class="shortcuts-row"><kbd>Ctrl+Z</kbd><span>Undo</span></div>
+          <div class="shortcuts-row"><kbd>Ctrl+Y</kbd><span>Redo</span></div>
+          <div class="shortcuts-row"><kbd>Ctrl+X</kbd><span>Cut</span></div>
+          <div class="shortcuts-row"><kbd>Ctrl+C</kbd><span>Copy</span></div>
+          <div class="shortcuts-row"><kbd>Ctrl+V</kbd><span>Paste</span></div>
+          <div class="shortcuts-row"><kbd>Ctrl+A</kbd><span>Select All</span></div>
+          <div class="shortcuts-row"><kbd>Tab</kbd><span>Indent</span></div>
+          <div class="shortcuts-row"><kbd>Shift+Tab</kbd><span>Outdent</span></div>
+        </div>
+        <div class="shortcuts-col">
+          <div class="shortcuts-group-title">Navigation</div>
+          <div class="shortcuts-row"><kbd>Ctrl+P</kbd><span>Go to File</span></div>
+          <div class="shortcuts-row"><kbd>Ctrl+G</kbd><span>Go to Line</span></div>
+          <div class="shortcuts-row"><kbd>Ctrl+Shift+P</kbd><span>Command Palette</span></div>
+
+          <div class="shortcuts-group-title">Search</div>
+          <div class="shortcuts-row"><kbd>Ctrl+F</kbd><span>Find</span></div>
+          <div class="shortcuts-row"><kbd>Ctrl+H</kbd><span>Replace</span></div>
+          <div class="shortcuts-row"><kbd>Ctrl+Shift+F</kbd><span>Find in Files</span></div>
+
+          <div class="shortcuts-group-title">View</div>
+          <div class="shortcuts-row"><kbd>Ctrl+`</kbd><span>Toggle Terminal</span></div>
+          <div class="shortcuts-row"><kbd>Alt+Z</kbd><span>Toggle Word Wrap</span></div>
+          <div class="shortcuts-row"><kbd>Ctrl+=</kbd><span>Zoom In</span></div>
+          <div class="shortcuts-row"><kbd>Ctrl+−</kbd><span>Zoom Out</span></div>
+          <div class="shortcuts-row"><kbd>Ctrl+0</kbd><span>Reset Zoom</span></div>
+          <div class="shortcuts-row"><kbd>Ctrl+?</kbd><span>Keyboard Shortcuts</span></div>
+          <div class="shortcuts-row"><kbd>Ctrl+\</kbd><span>Split Editor</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="context-menu" style="display:none"></div>
+
+  <!-- Help / About overlay -->
+  <div id="help-overlay" style="display:none">
+    <div id="help-backdrop"></div>
+    <div id="help-panel">
+
+      <!-- Left sidebar -->
+      <div id="help-sidebar">
+        <div id="help-sidebar-title">LittleNotepad</div>
+        <nav id="help-nav">
+          <button class="help-nav-item active" data-page="about">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/></svg>
+            About
+          </button>
+          <button class="help-nav-item" data-page="whats-new">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M5 4a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm-.5 2.5A.5.5 0 0 1 5 6h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zM5 8a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm0 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1H5z"/><path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm10-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1z"/></svg>
+            What's New
+          </button>
+          <button class="help-nav-item" data-page="log-issue">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/><path d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0z"/></svg>
+            Log New Issue
+          </button>
+          <button class="help-nav-item" data-page="tips">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M2 1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H2zm6.5 4.5a.5.5 0 0 1 0 1H5a.5.5 0 0 1 0-1h3.5zm-3 3a.5.5 0 0 1 0 1h-1a.5.5 0 0 1 0-1h1zm0 3a.5.5 0 0 1 0 1h-1a.5.5 0 0 1 0-1h1zm3-3a.5.5 0 0 1 0 1H5a.5.5 0 0 1 0-1h3.5zm0 3a.5.5 0 0 1 0 1H5a.5.5 0 0 1 0-1h3.5zm3-6a.5.5 0 0 1 0 1h-1a.5.5 0 0 1 0-1h1zm0 3a.5.5 0 0 1 0 1h-1a.5.5 0 0 1 0-1h1zm0 3a.5.5 0 0 1 0 1h-1a.5.5 0 0 1 0-1h1z"/></svg>
+            Useful Tips
+          </button>
+        </nav>
+        <div id="help-community">
+          <div class="help-community-label">COMMUNITY</div>
+          <button class="help-nav-item" id="help-github-btn">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+            GitHub Repository
+          </button>
+        </div>
+      </div>
+
+      <!-- Right content -->
+      <div id="help-content">
+        <div id="help-content-header">
+          <span id="help-content-title">About</span>
+          <button id="help-close" class="icon-btn" title="Close">✕</button>
+        </div>
+
+        <div id="help-pages">
+
+          <!-- About -->
+          <div class="help-page active" data-page="about">
+            <div class="help-about-card">
+              <div class="help-about-top">
+                <img class="help-app-icon" src="icon.svg" alt="LittleNotepad icon"/>
+                <div class="help-about-info">
+                  <div class="help-about-name">LittleNotepad <span id="help-app-version-badge" class="help-version-badge">v0.1.0</span></div>
+                  <div class="help-about-desc">A lightweight code editor built with Tauri and plain HTML/CSS/JS. No Node.js, no npm.</div>
+                  <button class="help-docs-btn" title="Documentation not yet available">
+                    <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M5 4a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm-.5 2.5A.5.5 0 0 1 5 6h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zM5 8a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5z"/><path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm10-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1z"/></svg>
+                    View Documentation Guide
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="help-info-grid">
+              <div class="help-info-card">
+                <div class="help-info-label">&gt;_ VERSION</div>
+                <div class="help-info-value" id="help-version">v0.1.0</div>
+              </div>
+              <div class="help-info-card">
+                <div class="help-info-label">&gt;_ BUILD</div>
+                <div class="help-info-value">2026.06</div>
+              </div>
+              <div class="help-info-card">
+                <div class="help-info-label">&gt;_ CHANNEL</div>
+                <div class="help-info-value" id="help-channel">Stable</div>
+              </div>
+              <div class="help-info-card">
+                <div class="help-info-label">&gt;_ PLATFORM</div>
+                <div class="help-info-value" id="help-platform">Windows</div>
+              </div>
+              <div class="help-info-card">
+                <div class="help-info-label">&gt;_ CPU</div>
+                <div class="help-info-value help-info-value--sm" id="help-cpu">—</div>
+              </div>
+              <div class="help-info-card">
+                <div class="help-info-label">&gt;_ LICENSE</div>
+                <div class="help-info-value">MIT</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- What's New -->
+          <div class="help-page" data-page="whats-new">
+            <div class="help-changelog">
+              <div class="help-changelog-version">
+                <span class="help-ver-tag">v0.1.0</span>
+                <span class="help-ver-date">2026-06-01</span>
+              </div>
+              <div class="help-changelog-section">ADDED</div>
+              <ul class="help-changelog-list">
+                <li>Multi-tab editor with drag-to-reorder and session restore — tabs, scroll position, and cursor persist across restarts</li>
+                <li>Syntax highlighting for 12 languages: <code>JS/TS</code>, <code>Rust</code>, <code>Python</code>, <code>HTML</code>, <code>CSS</code>, <code>JSON</code>, <code>Markdown</code>, <code>TOML</code>, <code>YAML</code>, <code>Shell</code>, <code>Go</code></li>
+                <li>Integrated terminal — choose <code>CMD</code>, <code>PowerShell</code>, or <code>Git Bash</code> per session; shell-specific prompts with git branch in bash sessions</li>
+                <li>File tree with git status markers (<code>M</code> / <code>A</code> / <code>D</code> / <code>U</code>), inline rename, create, and delete</li>
+                <li>Find &amp; Replace, Go to Line, and Global Search across the entire workspace</li>
+                <li>Command palette <code>Ctrl+Shift+P</code> and Go to File <code>Ctrl+P</code> with fuzzy matching</li>
+                <li>Code folding for <code>{}</code> blocks, comment blocks, and import groups</li>
+                <li>Minimap, matching bracket highlight, and column ruler</li>
+                <li>Markdown live preview with draggable split divider</li>
+                <li>Four color themes: <code>Dark</code>, <code>One Dark</code>, <code>Monokai</code>, <code>Light</code></li>
+                <li>Settings panel with <code>Appearance</code> / <code>Editor</code> / <code>Terminal</code> tabs and Reset to Defaults</li>
+                <li>Git branch in status bar and terminal prompt (bash sessions)</li>
+                <li>Clickable file paths in terminal output — <code>path/file.rs:10</code> opens the file at that line</li>
+                <li>Recent folders on welcome screen and in command palette</li>
+                <li>File watcher — detects external changes and new/deleted files within 3 s</li>
+                <li>Drag-and-drop files from OS into the editor to open them</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Useful Tips -->
+          <div class="help-page" data-page="tips">
+            <div class="help-changelog">
+
+              <div class="help-changelog-version">
+                <span class="help-ver-tag">Multiple Cursors</span>
+              </div>
+              <p style="margin:0 0 10px;opacity:0.75;font-size:12px;line-height:1.6;">
+                Place more than one cursor in the document at the same time. Every keystroke, deletion, or paste applies to all cursor positions simultaneously — great for renaming a variable, editing multiple lines at once, or making column edits.
+              </p>
+              <div class="help-changelog-section">HOW TO USE</div>
+              <ul class="help-changelog-list">
+                <li><code>Alt + Click</code> — add an extra cursor at the clicked position</li>
+                <li><code>Ctrl + D</code> — select the next occurrence of the current word (adds a cursor there); repeat to keep selecting more</li>
+                <li><code>Ctrl + Alt + Up / Down</code> — add a cursor on the line above or below</li>
+                <li><code>Escape</code> — collapse back to a single cursor</li>
+              </ul>
+              <div class="help-changelog-section">EXAMPLE</div>
+              <ul class="help-changelog-list">
+                <li>Double-click a variable name to select it, then press <code>Ctrl + D</code> repeatedly to select every occurrence, and type the new name — all replaced at once.</li>
+                <li>Hold <code>Alt</code> and click at the start of several lines to build a column cursor, then type or paste to prefix every line simultaneously.</li>
+              </ul>
+
+            </div>
+          </div>
+
+          <!-- Log Issue -->
+          <div class="help-page" data-page="log-issue">
+            <div class="help-issue-banner">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/><path d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0z"/></svg>
+              Open an issue on our GitHub repository.
+            </div>
+            <div class="help-field-label">REPORT TYPE</div>
+            <div class="help-type-group">
+              <button class="help-type-btn active" data-type="bug">🐛 Bug</button>
+              <button class="help-type-btn" data-type="feature">✨ Feature</button>
+              <button class="help-type-btn" data-type="question">❓ Question</button>
+            </div>
+            <div class="help-field-label">ISSUE TITLE</div>
+            <input id="help-issue-title" class="help-input" type="text" placeholder="Short summary of the issue…" autocomplete="off" spellcheck="false">
+            <div class="help-field-label">DESCRIPTION</div>
+            <textarea id="help-issue-body" class="help-textarea" placeholder="Tell us what happened…" spellcheck="false"></textarea>
+            <div class="help-field-label">ATTACH AN IMAGE?</div>
+            <div class="help-attach-row">
+              <div class="help-attach-box">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" style="flex-shrink:0;opacity:0.5"><path d="M4.5 3a2.5 2.5 0 0 1 5 0v9a1.5 1.5 0 0 1-3 0V5a.5.5 0 0 1 1 0v7a.5.5 0 0 0 1 0V3a1.5 1.5 0 1 0-3 0v9a2.5 2.5 0 0 0 5 0V5a.5.5 0 0 1 1 0v7a3.5 3.5 0 1 1-7 0V3z"/></svg>
+                After we open the GitHub page, drag-and-drop or paste the image into the issue body.
+              </div>
+              <div class="help-attach-right">
+                <div class="help-issue-meta" id="help-issue-meta">App: v0.1.0 · OS: Windows</div>
+                <button class="help-create-btn" id="help-create-issue">Create Issue</button>
+              </div>
+            </div>
+            <div class="help-no-account">Don't have a GitHub account?</div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Check for Updates overlay -->
+  <div id="updates-overlay" style="display:none">
+    <div id="updates-backdrop"></div>
+    <div id="updates-dialog">
+
+      <div id="updates-header">
+        <div id="updates-header-title">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" style="opacity:0.7">
+            <path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm0-1a8 8 0 1 1 0 16A8 8 0 0 1 8 0z"/>
+            <path d="M8 4.5a.5.5 0 0 1 .5.5v3.793l1.146-1.147a.5.5 0 0 1 .708.708l-2 2a.5.5 0 0 1-.708 0l-2-2a.5.5 0 0 1 .708-.708L7.5 8.793V5a.5.5 0 0 1 .5-.5z"/>
+          </svg>
+          Software Updates
+        </div>
+        <button id="updates-close" class="icon-btn" title="Close">✕</button>
+      </div>
+
+      <div id="updates-body">
+
+        <!-- Checking -->
+        <div class="updates-page" id="updates-page-checking">
+          <div class="updates-ok-icon updates-spin">
+            <svg width="40" height="40" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z"/>
+              <path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5.002 5.002 0 0 0 8 3zM3.1 9a5.002 5.002 0 0 0 7.757 2.997a.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.1z"/>
+            </svg>
+          </div>
+          <div class="updates-headline">Checking for updates…</div>
+        </div>
+
+        <!-- Error -->
+        <div class="updates-page" id="updates-page-error">
+          <div class="updates-ok-icon updates-muted">
+            <svg width="40" height="40" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+              <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z"/>
+            </svg>
+          </div>
+          <div class="updates-headline">Couldn't check for updates</div>
+          <div class="updates-sub">Check your internet connection and try again.</div>
+          <button class="updates-check-btn" id="updates-check-error-retry">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z"/><path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5.002 5.002 0 0 0 8 3zM3.1 9a5.002 5.002 0 0 0 7.757 2.997a.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.1z"/></svg>
+            Try again
+          </button>
+        </div>
+
+        <!-- Up to date -->
+        <div class="updates-page active" id="updates-page-ok">
+          <div class="updates-ok-icon">
+            <svg width="40" height="40" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+              <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
+            </svg>
+          </div>
+          <div class="updates-headline">You're up to date!</div>
+          <div class="updates-sub" id="updates-ok-sub">LittleNotepad v0.1.0 is the latest version.</div>
+          <button class="updates-check-btn" id="updates-check-again">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z"/><path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5.002 5.002 0 0 0 8 3zM3.1 9a5.002 5.002 0 0 0 7.757 2.997a.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.1z"/></svg>
+            Check again
+          </button>
+        </div>
+
+        <!-- Update available -->
+        <div class="updates-page" id="updates-page-available">
+          <div class="updates-new-card">
+            <div class="updates-new-label">NEW VERSION AVAILABLE</div>
+            <div class="updates-new-version" id="updates-new-version">v0.2.0</div>
+            <div class="updates-new-meta" id="updates-new-meta">v0.1.0 → v0.2.0</div>
+          </div>
+          <div class="updates-whats-new-label">WHAT'S NEW</div>
+          <div class="updates-whats-new-body" id="updates-whats-new">
+            <p>See the release notes on GitHub for full details.</p>
+          </div>
+          <div class="updates-avail-actions">
+            <button class="updates-download-btn" id="updates-download">
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/></svg>
+              Download Update
+            </button>
+            <button class="updates-later-btn" id="updates-later">Later</button>
+          </div>
+        </div>
+
+      </div>
+
+      <div id="updates-footer">
+        <span id="updates-footer-version">Current: v0.1.0</span>
+        <button id="updates-all-releases">All Releases ↗</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Apps overlay -->
+  <div id="apps-overlay" style="display:none">
+    <div id="apps-backdrop"></div>
+    <div id="apps-dialog">
+      <div id="apps-header">
+        <div id="apps-header-title">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M1 2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V2zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V2zM1 7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V7zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V7zM1 12a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-2zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-2zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1v-2z"/>
+          </svg>
+          Apps
+        </div>
+        <button id="apps-close" class="icon-btn" title="Close">✕</button>
+      </div>
+      <div id="apps-search-bar">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor" style="flex-shrink:0;opacity:0.5"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.656a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/></svg>
+        <input id="apps-search" type="text" placeholder="Search apps…" autocomplete="off" spellcheck="false">
+      </div>
+      <div id="apps-list"></div>
+    </div>
+  </div>
+
+  <!-- Rename fallback confirm dialog -->
+  <div id="rename-confirm-overlay" style="display:none">
+    <div id="rename-confirm-backdrop"></div>
+    <div id="rename-confirm-dialog">
+      <div id="rename-confirm-title">⚠ Text Replace — No LSP</div>
+      <div id="rename-confirm-body"></div>
+      <div id="rename-confirm-actions">
+        <button id="rename-confirm-cancel">Cancel</button>
+        <button id="rename-confirm-ok">Rename All</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rename symbol overlay -->
+  <div id="rename-overlay" style="display:none">
+    <div id="rename-container">
+      <span id="rename-label">Rename:</span>
+      <input id="rename-input" type="text" autocomplete="off" spellcheck="false">
+      <span id="rename-hint">Enter ✓  Esc ✗</span>
+    </div>
+  </div>
+
+  <!-- Code actions lightbulb + menu -->
+  <div id="lightbulb" title="Code Actions (Ctrl+.)">💡</div>
+  <div id="code-action-menu" style="display:none"></div>
+
+  <!-- Go to Definition multi-result picker -->
+  <div id="def-picker" style="display:none">
+    <div id="def-picker-backdrop"></div>
+    <div id="def-picker-container">
+      <div id="def-picker-header">Go to Definition</div>
+      <ul id="def-picker-list"></ul>
+    </div>
+  </div>
+
+  <script type="module" src="js/app.js?v=4"></script>
+</body>
+</html>

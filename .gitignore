@@ -1,0 +1,23 @@
+# Rust build artifacts
+src-tauri/target/
+
+# Generated Tauri schemas
+src-tauri/gen/schemas/
+
+# Progress / planning notes
+progress.md
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+
+# Editor directories
+.vscode/
+.idea/
+
+# Node (if ever added)
+node_modules/

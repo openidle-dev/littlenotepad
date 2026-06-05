@@ -1,0 +1,223 @@
+:root {
+  /* ── Backgrounds ── */
+  --bg-base:          #1e1e1e;
+  --bg-sidebar:       #252526;
+  --bg-tabs:          #2d2d2d;
+  --bg-tab-active:    #1e1e1e;
+  --bg-tab-hover:     #2a2d2e;
+  --bg-terminal:      #1e1e1e;
+  --bg-status:        #1b8a6b;
+  --bg-status-hover:  #169060;
+  --bg-input:         #3c3c3c;
+  --bg-hover:         #2a2d2e;
+  --bg-selected:      #37373d;
+  --bg-active-line:   #2a2d2e;
+  --bg-palette:       #252526;
+
+  /* ── Foregrounds ── */
+  --fg-default:     #d4d4d4;
+  --fg-muted:       #858585;
+  --fg-active:      #ffffff;
+  --fg-inactive:    #969696;
+  --fg-placeholder: #606060;
+
+  /* ── Brand accent ── */
+  --accent:         #4ec9b0;
+  --accent-dim:     #3ba890;
+
+  /* ── Borders ── */
+  --border:         #454545;
+  --border-focus:   #007fd4;
+
+  /* ── Selection ── */
+  --selection-bg:   rgba(38, 79, 120, 0.65);
+
+  /* ── Syntax ── */
+  --syn-keyword:    #569cd6;
+  --syn-string:     #ce9178;
+  --syn-comment:    #6a9955;
+  --syn-number:     #b5cea8;
+  --syn-function:   #dcdcaa;
+  --syn-type:       #4ec9b0;
+  --syn-variable:   #9cdcfe;
+  --syn-operator:   #d4d4d4;
+  --syn-tag:        #4ec9b0;
+  --syn-attr:       #9cdcfe;
+  --syn-prop:       #9cdcfe;
+  --syn-regex:      #d16969;
+  --syn-escape:     #d7ba7d;
+
+  /* ── Editor typography ── */
+  --editor-font:        'Cascadia Code', 'Fira Code', 'JetBrains Mono', 'Consolas', 'Courier New', monospace;
+  --editor-font-size:   14px;
+  --editor-line-height: 1.5;
+  --term-font-size:     13px;
+
+  /* ── UI typography ── */
+  --ui-font:        -apple-system, 'Segoe UI', system-ui, sans-serif;
+  --ui-font-size:   12px;
+
+  /* ── Sizing ── */
+  --sidebar-width:      240px;
+  --tab-height:         35px;
+  --status-height:      22px;
+  --terminal-height:    220px;
+  --sidebar-min-width:  120px;
+  --sidebar-max-width:  600px;
+  --line-num-width:     52px;
+  --fold-gutter-width:  16px;
+  --resize-handle-size: 4px;
+  --breadcrumb-height:  24px;
+
+  /* ── Indent guides ── */
+  --indent-guide-color: rgba(255,255,255,0.1);
+
+  /* ── Tab size (overridden by settings) ── */
+  --tab-size: 2;
+}
+
+/* ══════════════════════════════════
+   ONE DARK (dark-plus)
+══════════════════════════════════ */
+[data-theme="dark-plus"] {
+  --bg-base:        #282c34;
+  --bg-sidebar:     #21252b;
+  --bg-tabs:        #21252b;
+  --bg-tab-active:  #282c34;
+  --bg-tab-hover:   #2c313c;
+  --bg-terminal:    #21252b;
+  --bg-status:      #21252b;
+  --bg-status-hover:#1a1d23;
+  --bg-input:       #1d2026;
+  --bg-hover:       #2c313c;
+  --bg-selected:    #3a3f4b;
+  --bg-palette:     #21252b;
+  --fg-default:     #abb2bf;
+  --fg-muted:       #5c6370;
+  --fg-active:      #ffffff;
+  --fg-inactive:    #636d83;
+  --fg-placeholder: #4b5263;
+  --accent:         #61afef;
+  --accent-dim:     #4d8fc2;
+  --border:         #181a1f;
+  --border-focus:   #528bff;
+  --selection-bg:   rgba(62, 68, 81, 0.7);
+  --syn-keyword:    #c678dd;
+  --syn-string:     #98c379;
+  --syn-comment:    #5c6370;
+  --syn-number:     #d19a66;
+  --syn-function:   #61afef;
+  --syn-type:       #e5c07b;
+  --syn-variable:   #e06c75;
+  --syn-operator:   #56b6c2;
+  --syn-tag:        #e06c75;
+  --syn-attr:       #d19a66;
+  --syn-prop:       #56b6c2;
+  --syn-regex:      #98c379;
+  --syn-escape:     #56b6c2;
+}
+
+/* ══════════════════════════════════
+   MONOKAI
+══════════════════════════════════ */
+[data-theme="monokai"] {
+  --bg-base:        #272822;
+  --bg-sidebar:     #1e1f1c;
+  --bg-tabs:        #1e1f1c;
+  --bg-tab-active:  #272822;
+  --bg-tab-hover:   #3e3d32;
+  --bg-terminal:    #1e1f1c;
+  --bg-status:      #75715e;
+  --bg-status-hover:#5d5b4d;
+  --bg-input:       #3e3d32;
+  --bg-hover:       #3e3d32;
+  --bg-selected:    #49483e;
+  --bg-palette:     #1e1f1c;
+  --fg-default:     #f8f8f2;
+  --fg-muted:       #75715e;
+  --fg-active:      #ffffff;
+  --fg-inactive:    #90908a;
+  --fg-placeholder: #5c5c56;
+  --accent:         #a6e22e;
+  --accent-dim:     #84b520;
+  --border:         #1a1b18;
+  --border-focus:   #a6e22e;
+  --selection-bg:   rgba(73, 72, 62, 0.7);
+  --syn-keyword:    #f92672;
+  --syn-string:     #e6db74;
+  --syn-comment:    #75715e;
+  --syn-number:     #ae81ff;
+  --syn-function:   #a6e22e;
+  --syn-type:       #66d9ef;
+  --syn-variable:   #fd971f;
+  --syn-operator:   #f92672;
+  --syn-tag:        #f92672;
+  --syn-attr:       #a6e22e;
+  --syn-prop:       #66d9ef;
+  --syn-regex:      #e6db74;
+  --syn-escape:     #ae81ff;
+}
+
+/* ══════════════════════════════════
+   LIGHT (VS Code Light+)
+══════════════════════════════════ */
+[data-theme="light"] {
+  --bg-base:        #ffffff;
+  --bg-sidebar:     #f3f3f3;
+  --bg-tabs:        #ececec;
+  --bg-tab-active:  #ffffff;
+  --bg-tab-hover:   #e8e8e8;
+  --bg-terminal:    #ffffff;
+  --bg-status:      #007acc;
+  --bg-status-hover:#0069b3;
+  --bg-input:       #ffffff;
+  --bg-hover:       #e8e8e8;
+  --bg-selected:    #cce5ff;
+  --bg-palette:     #f3f3f3;
+  --fg-default:     #000000;
+  --fg-muted:       #717171;
+  --fg-active:      #000000;
+  --fg-inactive:    #5a5a5a;
+  --fg-placeholder: #ababab;
+  --accent:         #007acc;
+  --accent-dim:     #005f9e;
+  --border:         #e0e0e0;
+  --border-focus:   #0078d4;
+  --selection-bg:        rgba(0,120,215,0.25);
+  --indent-guide-color:  rgba(0,0,0,0.12);
+  --syn-keyword:    #0000ff;
+  --syn-string:     #a31515;
+  --syn-comment:    #008000;
+  --syn-number:     #098658;
+  --syn-function:   #795e26;
+  --syn-type:       #267f99;
+  --syn-variable:   #001080;
+  --syn-operator:   #000000;
+  --syn-tag:        #800000;
+  --syn-attr:       #ff0000;
+  --syn-prop:       #0451a5;
+  --syn-regex:      #d16969;
+  --syn-escape:     #ee0000;
+}
+[data-theme="light"] * {
+  scrollbar-color: #c8c8c8 transparent;
+}
+[data-theme="light"] *::-webkit-scrollbar-thumb       { background: #c8c8c8; }
+[data-theme="light"] *::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
+[data-theme="light"] ::selection { background: rgba(0,120,215,0.25); }
+[data-theme="light"] #editor-textarea::selection { background: rgba(0,120,215,0.3); }
+
+/* ══════════════════════════════════
+   SCROLLBARS (default dark)
+══════════════════════════════════ */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #424242 transparent;
+}
+*::-webkit-scrollbar       { width: 8px; height: 8px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb { background: #424242; border-radius: 4px; }
+*::-webkit-scrollbar-thumb:hover { background: #555; }
+
+/* ── Selection ── */
+::selection { background: var(--selection-bg); color: inherit; }
