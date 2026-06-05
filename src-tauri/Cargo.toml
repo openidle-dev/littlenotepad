@@ -1,6 +1,6 @@
 [package]
 name = "littlenotepad"
-version = "0.0.1"
+version = "0.0.4"
 description = "LittleNotepad code editor"
 authors = []
 license = "MIT"
@@ -21,6 +21,7 @@ tauri = { version = "2.11.2", features = [] }
 tauri-plugin-dialog = "2"
 tauri-plugin-global-shortcut = "2"
 portable-pty = "0.8"
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls"] }
 
 [target.'cfg(target_os = "windows")'.dependencies]
 tauri-plugin-prevent-default = { version = "4", features = ["platform-windows"] }

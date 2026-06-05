@@ -1,7 +1,9 @@
 const invoke = window.__TAURI__?.core.invoke;
 const GITHUB_URL = 'https://github.com/openidle-dev/littlenotepad';
+const API_URL    = 'https://api.github.com/repos/openidle-dev/littlenotepad/releases';
 
 let _getChannelLabel = () => 'Stable';
+let _whatsNewLoaded  = false;
 
 export function setChannelGetter(fn) { _getChannelLabel = fn; }
 
@@ -21,6 +23,7 @@ export function initHelp() {
     navItems.forEach(b => b.classList.toggle('active', b.dataset.page === name));
     pages.forEach(p => p.classList.toggle('active', p.dataset.page === name));
     if (titleEl) titleEl.textContent = PAGE_TITLES[name] ?? name;
+    if (name === 'whats-new' && !_whatsNewLoaded) loadWhatsNew();
   }
 
   navItems.forEach(btn => btn.addEventListener('click', () => switchPage(btn.dataset.page)));
@@ -73,6 +76,42 @@ export function initHelp() {
       const chCard = document.getElementById('help-channel');
       if (chCard) chCard.textContent = _getChannelLabel();
     } catch {}
+  }
+
+  async function loadWhatsNew() {
+    _whatsNewLoaded = true;
+    const container = document.getElementById('help-whats-new-container');
+    if (!container) return;
+    try {
+      const res = await fetch(API_URL, {
+        headers: { 'Accept': 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' }
+      });
+      if (!res.ok) throw new Error();
+      const releases = await res.json();
+      const published = releases.filter(r => !r.draft);
+      if (!published.length) {
+        container.innerHTML = '<div style="padding:20px;opacity:0.5;text-align:center">No releases yet.</div>';
+        return;
+      }
+      container.innerHTML = published.map(r => {
+        const date = r.published_at ? new Date(r.published_at).toISOString().slice(0, 10) : '';
+        const esc  = (r.body ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        const body = esc.trim()
+          ? `<pre style="white-space:pre-wrap;font-family:inherit;margin:8px 0 0;font-size:12px;line-height:1.7;opacity:0.85">${esc}</pre>`
+          : '<p style="opacity:0.4;font-size:12px;margin:8px 0 0">No release notes.</p>';
+        return `<div class="help-changelog">
+          <div class="help-changelog-version">
+            <span class="help-ver-tag">${r.tag_name}</span>
+            ${date ? `<span class="help-ver-date">${date}</span>` : ''}
+            ${r.prerelease ? '<span class="help-ver-beta">Beta</span>' : ''}
+          </div>
+          ${body}
+        </div>`;
+      }).join('');
+    } catch {
+      _whatsNewLoaded = false;
+      container.innerHTML = '<div style="padding:20px;opacity:0.5;text-align:center">Could not load release notes. Check your connection.</div>';
+    }
   }
 
   return { open, close };
