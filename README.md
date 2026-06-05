@@ -67,39 +67,3 @@ Artifacts in `src-tauri/target/release/bundle/`:
 
 > **Windows:** Run `Unblock-File .\LittleNotepad_*.msi` in PowerShell before distributing to strip the MOTW block.
 
----
-
-## Bumping the version
-
-Two files must stay in sync:
-
-**`src-tauri/Cargo.toml`**
-```toml
-[package]
-version = "0.2.0"
-```
-
-**`src-tauri/tauri.conf.json`**
-```json
-{
-  "version": "0.2.0"
-}
-```
-
-Then tag and push:
-
-```sh
-git add src-tauri/Cargo.toml src-tauri/tauri.conf.json
-git commit -m "chore: bump version to 0.2.0"
-git tag v0.2.0
-git push origin main --tags
-```
-
-Pushing a `v*` tag triggers the GitHub Actions release pipeline, which builds on Windows, macOS, and Linux and publishes a GitHub Release with installers attached.
-
-Until then, build manually on each OS and upload via:
-
-```sh
-gh release create v0.2.0 --generate-notes \
-  "src-tauri/target/release/bundle/msi/LittleNotepad_0.2.0_x64_en-US.msi"
-```
