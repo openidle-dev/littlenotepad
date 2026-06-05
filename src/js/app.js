@@ -329,6 +329,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           cursorPos:  f?.cursorPos  ?? 0,
           scrollTop:  f?.scrollTop  ?? 0,
           scrollLeft: f?.scrollLeft ?? 0,
+          pinned:     tab.classList.contains('pinned'),
         });
       }
       const active = state.activeFile ?? '';
@@ -428,12 +429,14 @@ document.addEventListener('DOMContentLoaded', async () => {
           for (const t of background) {
             const name = t.path.replace(/\\/g, '/').split('/').pop() || t.path;
             await tabs.openFile(t.path, name, { activate: false, cursorPos: t.cursorPos, scrollTop: t.scrollTop, scrollLeft: t.scrollLeft });
+            if (t.pinned) tabs.setPinnedByPath(t.path);
             _applyDirtyRestore(t.path, dirtyRestoreMap);
           }
           if (active) {
             const name = active.replace(/\\/g, '/').split('/').pop() || active;
             const t = tabEntries.find(e => e.path === active);
             await tabs.openFile(active, name, { activate: true, cursorPos: t?.cursorPos ?? 0, scrollTop: t?.scrollTop ?? 0, scrollLeft: t?.scrollLeft ?? 0 });
+            if (t?.pinned) tabs.setPinnedByPath(active);
             _applyDirtyRestore(active, dirtyRestoreMap);
           }
         } catch (e) { console.error('Session restore failed:', e); }
@@ -584,11 +587,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     e.preventDefault();
     ctxFocus = document.activeElement;
 
+    const inTab      = e.target.closest('#tab-list .tab');
     const inEditor   = !!e.target.closest('#editor-wrapper');
     const inTerminal = !!e.target.closest('#terminal-body');
 
     let items;
-    if (inEditor) {
+    if (inTab) {
+      const isPinned = inTab.classList.contains('pinned');
+      items = [
+        { label: isPinned ? 'Unpin Tab' : 'Pin Tab', run: () => tabs.togglePinByPath(inTab.dataset.path ?? null) },
+      ];
+    } else if (inEditor) {
       items = [
         { label: 'Cut',        kbd: 'Ctrl+X', run: () => doExec('cut') },
         { label: 'Copy',       kbd: 'Ctrl+C', run: () => doExec('copy') },

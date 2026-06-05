@@ -52,12 +52,17 @@ export function initTabs(state) {
     dirtyDot.textContent = '●';
     dirtyDot.style.display = 'none';
 
+    const pinIcon = document.createElement('span');
+    pinIcon.className = 'tab-pin-icon';
+    pinIcon.title = 'Pinned';
+    pinIcon.innerHTML = `<svg width="9" height="9" viewBox="0 0 16 16" fill="currentColor"><path d="M9.828.722a.5.5 0 0 1 .354.146l4.95 4.95a.5.5 0 0 1 0 .707c-.48.48-1.072.588-1.503.588-.177 0-.335-.018-.46-.039l-3.134 3.134a5.927 5.927 0 0 1 .16 1.013c.046.702-.032 1.687-.72 2.375a.5.5 0 0 1-.707 0l-2.829-2.828-3.182 3.182c-.195.195-1.219.902-1.414.707-.195-.195.512-1.22.707-1.414l3.182-3.182-2.828-2.829a.5.5 0 0 1 0-.707c.688-.688 1.673-.767 2.375-.72a5.922 5.922 0 0 1 1.013.16l3.134-3.133a2.772 2.772 0 0 1-.04-.461c0-.43.108-1.022.589-1.503a.5.5 0 0 1 .353-.146z"/></svg>`;
+
     const closeBtn = document.createElement('button');
     closeBtn.className = 'tab-close';
     closeBtn.textContent = '✕';
     closeBtn.title = 'Close (Ctrl+W)';
 
-    tab.append(nameSpan, dirtyDot, closeBtn);
+    tab.append(nameSpan, dirtyDot, pinIcon, closeBtn);
     tabList.appendChild(tab);
 
     tab.addEventListener('click', (e) => {
@@ -160,6 +165,7 @@ export function initTabs(state) {
   }
 
   function closeTab(tab) {
+    if (tab.classList.contains('pinned')) return;
     const dirty = tab.querySelector('.tab-dirty').style.display !== 'none';
     if (dirty && !confirm(`Discard unsaved changes to "${tab.dataset.name}"?`)) return;
 
@@ -197,14 +203,38 @@ export function initTabs(state) {
 
   function closeAll() {
     for (const tab of [...tabList.querySelectorAll('.tab')]) {
+      if (tab.classList.contains('pinned')) continue;
       const dirty = tab.querySelector('.tab-dirty').style.display !== 'none';
       if (dirty && !confirm(`Discard unsaved changes to "${tab.dataset.name}"?`)) continue;
       if (tab.dataset.path) state.openFiles.delete(tab.dataset.path);
       state.openFiles.delete(`@ut:${tab.dataset.name}`);
       tab.remove();
     }
-    state.activeFile = null;
-    document.dispatchEvent(new CustomEvent('ln:no-active-file'));
+    const remaining = tabList.querySelector('.tab');
+    if (remaining) {
+      activateTab(remaining);
+    } else {
+      state.activeFile = null;
+      document.dispatchEvent(new CustomEvent('ln:no-active-file'));
+    }
+    document.dispatchEvent(new CustomEvent('ln:tabs-changed'));
+  }
+
+  function togglePin(tab) {
+    const pinned = tab.classList.toggle('pinned');
+    tab.querySelector('.tab-pin-icon').style.display = pinned ? '' : 'none';
+    tab.querySelector('.tab-close').style.display    = pinned ? 'none' : '';
+    document.dispatchEvent(new CustomEvent('ln:tabs-changed'));
+  }
+
+  function togglePinByPath(path) {
+    const tab = path ? findTabByPath(path) : tabList.querySelector('.tab.active');
+    if (tab) togglePin(tab);
+  }
+
+  function setPinnedByPath(path) {
+    const tab = findTabByPath(path);
+    if (tab && !tab.classList.contains('pinned')) togglePin(tab);
   }
 
   function renameTab(oldPath, newPath, newName) {
@@ -233,5 +263,5 @@ export function initTabs(state) {
     if (!isNaN(num) && num >= tabIdSeq) tabIdSeq = num;
   }
 
-  return { openFile, newUntitled, restoreUntitled, setDirty, closeActiveTab, closeAll, renameTab };
+  return { openFile, newUntitled, restoreUntitled, setDirty, closeActiveTab, closeAll, renameTab, togglePinByPath, setPinnedByPath };
 }
