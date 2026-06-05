@@ -1060,17 +1060,21 @@ fn lsp_confirm_initialized(lsp_state: tauri::State<'_, LspState>, language: Stri
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    tauri::Builder::default()
+    let builder = tauri::Builder::default()
         .manage(PrefsLock(Mutex::new(())))
         .manage(PtySessions(Mutex::new(HashMap::new())))
         .manage(CmdState(Mutex::new(HashMap::new())))
-        .manage(LspState(std::sync::Arc::new(Mutex::new(HashMap::new()))))
-        .plugin(
-            tauri_plugin_prevent_default::Builder::new()
-                .platform(tauri_plugin_prevent_default::PlatformOptions::new()
-                    .browser_accelerator_keys(false))
-                .build()
-        )
+        .manage(LspState(std::sync::Arc::new(Mutex::new(HashMap::new()))));
+
+    #[cfg(target_os = "windows")]
+    let builder = builder.plugin(
+        tauri_plugin_prevent_default::Builder::new()
+            .platform(tauri_plugin_prevent_default::PlatformOptions::new()
+                .browser_accelerator_keys(false))
+            .build()
+    );
+
+    builder
         .plugin(tauri_plugin_dialog::init())
         .plugin(
             tauri_plugin_global_shortcut::Builder::new()
