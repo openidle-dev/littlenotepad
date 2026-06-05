@@ -1058,6 +1058,44 @@ fn lsp_confirm_initialized(lsp_state: tauri::State<'_, LspState>, language: Stri
     }
 }
 
+#[tauri::command]
+async fn download_update(url: String, filename: String) -> Result<String, String> {
+    let temp_path = std::env::temp_dir().join(&filename);
+    let bytes = reqwest::get(&url)
+        .await.map_err(|e| e.to_string())?
+        .bytes()
+        .await.map_err(|e| e.to_string())?;
+    std::fs::write(&temp_path, &bytes).map_err(|e| e.to_string())?;
+    Ok(temp_path.to_string_lossy().into_owned())
+}
+
+#[tauri::command]
+fn run_installer(path: String) -> Result<(), String> {
+    #[cfg(target_os = "windows")]
+    std::process::Command::new(&path)
+        .spawn().map_err(|e| e.to_string())?;
+
+    #[cfg(target_os = "macos")]
+    std::process::Command::new("open")
+        .arg(&path)
+        .spawn().map_err(|e| e.to_string())?;
+
+    #[cfg(target_os = "linux")]
+    {
+        if path.ends_with(".AppImage") {
+            use std::os::unix::fs::PermissionsExt;
+            let mut perms = std::fs::metadata(&path).map_err(|e| e.to_string())?.permissions();
+            perms.set_mode(0o755);
+            std::fs::set_permissions(&path, perms).map_err(|e| e.to_string())?;
+            std::process::Command::new(&path).spawn().map_err(|e| e.to_string())?;
+        } else {
+            std::process::Command::new("xdg-open").arg(&path).spawn().map_err(|e| e.to_string())?;
+        }
+    }
+
+    Ok(())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     let builder = tauri::Builder::default()
@@ -1167,6 +1205,8 @@ pub fn run() {
             lsp_send,
             lsp_stop,
             lsp_confirm_initialized,
+            download_update,
+            run_installer,
         ])
         .run(tauri::generate_context!())
         .expect("error while running LittleNotepad");
