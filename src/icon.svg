@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="45%" r="60%">
+      <stop offset="0%"   stop-color="#1a0533"/>
+      <stop offset="100%" stop-color="#05030f"/>
+    </radialGradient>
+    <filter id="glow-sm">
+      <feGaussianBlur stdDeviation="8"  result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="glow-lg">
+      <feGaussianBlur stdDeviation="18" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <linearGradient id="cur" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#e879f9"/>
+      <stop offset="100%" stop-color="#818cf8"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1024" height="1024" rx="210" fill="url(#bg)"/>
+
+  <!-- Subtle radial bloom behind lines -->
+  <ellipse cx="512" cy="510" rx="310" ry="380" fill="#6d28d9" opacity="0.08"/>
+
+  <!-- ── Code lines ─────────────────────────────────── -->
+
+  <!-- Line 1 — keyword (violet) -->
+  <rect x="200" y="268" width="148" height="42" rx="10" fill="#a78bfa" filter="url(#glow-sm)"/>
+  <rect x="364" y="268" width="236" height="42" rx="10" fill="#4b5563" opacity="0.7"/>
+
+  <!-- Line 2 — string (cyan), indented -->
+  <rect x="248" y="342" width="96"  height="42" rx="10" fill="#4b5563" opacity="0.7"/>
+  <rect x="360" y="342" width="196" height="42" rx="10" fill="#22d3ee" filter="url(#glow-sm)"/>
+  <rect x="572" y="342" width="88"  height="42" rx="10" fill="#4b5563" opacity="0.7"/>
+
+  <!-- Line 3 — number (amber), double-indented -->
+  <rect x="296" y="416" width="112" height="42" rx="10" fill="#fbbf24" filter="url(#glow-sm)"/>
+  <rect x="424" y="416" width="164" height="42" rx="10" fill="#4b5563" opacity="0.7"/>
+
+  <!-- Line 4 — function (green) -->
+  <rect x="200" y="490" width="176" height="42" rx="10" fill="#4ade80" filter="url(#glow-sm)"/>
+  <rect x="392" y="490" width="232" height="42" rx="10" fill="#4b5563" opacity="0.7"/>
+
+  <!-- Line 5 — string (pink), indented -->
+  <rect x="248" y="564" width="80"  height="42" rx="10" fill="#4b5563" opacity="0.7"/>
+  <rect x="344" y="564" width="168" height="42" rx="10" fill="#f472b6" filter="url(#glow-sm)"/>
+  <rect x="528" y="564" width="112" height="42" rx="10" fill="#4b5563" opacity="0.7"/>
+
+  <!-- Line 6 — comment (dim gray) -->
+  <rect x="200" y="638" width="320" height="42" rx="10" fill="#374151" opacity="0.6"/>
+
+  <!-- Line 7 — current line: short token then cursor -->
+  <rect x="200" y="712" width="132" height="42" rx="10" fill="#a78bfa" filter="url(#glow-sm)"/>
+
+  <!-- Cursor block — glowing, gradient -->
+  <rect x="348" y="710" width="22" height="46" rx="4" fill="url(#cur)" filter="url(#glow-lg)"/>
+
+</svg>
