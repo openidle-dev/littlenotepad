@@ -92,7 +92,6 @@ jobs:
         run: cargo tauri build
         env:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
-          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ""
 
       - name: Strip Mark-of-the-Web (MSI)
         if: matrix.platform == 'windows'
