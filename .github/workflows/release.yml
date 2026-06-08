@@ -60,16 +60,16 @@ jobs:
           path: ~\AppData\Local\tauri
           key: tauri-tools-windows
 
+      - name: Install macOS dependencies
+        if: matrix.platform == 'macos'
+        run: brew install create-dmg
+
       - name: Cache Tauri tools (AppImage)
         if: matrix.platform == 'linux'
         uses: actions/cache@v4
         with:
           path: ~/.local/share/tauri
           key: tauri-tools-linux
-
-      - name: Install macOS dependencies
-        if: matrix.platform == 'macos'
-        run: brew install create-dmg
 
       - name: Install Tauri CLI
         run: cargo install tauri-cli --version "^2.11" --locked
@@ -91,7 +91,8 @@ jobs:
       - name: Build
         run: cargo tauri build
         env:
-          TAURI_SIGNING_PRIVATE_KEY: ""
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ""
 
       - name: Strip Mark-of-the-Web (MSI)
         if: matrix.platform == 'windows'
@@ -112,22 +113,27 @@ jobs:
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path artifacts
-          Copy-Item -Path "src-tauri/target/release/bundle/msi/*.msi"  -Destination artifacts/ -ErrorAction SilentlyContinue
-          Copy-Item -Path "src-tauri/target/release/bundle/nsis/*.exe" -Destination artifacts/ -ErrorAction SilentlyContinue
+          Copy-Item -Path "src-tauri/target/release/bundle/msi/*.msi"      -Destination artifacts/ -ErrorAction SilentlyContinue
+          Copy-Item -Path "src-tauri/target/release/bundle/nsis/*.exe"      -Destination artifacts/ -ErrorAction SilentlyContinue
+          Copy-Item -Path "src-tauri/target/release/bundle/nsis/*.zip"      -Destination artifacts/ -ErrorAction SilentlyContinue
+          Copy-Item -Path "src-tauri/target/release/bundle/nsis/*.sig"      -Destination artifacts/ -ErrorAction SilentlyContinue
 
       - name: Collect Linux artifacts
         if: matrix.platform == 'linux'
         run: |
           mkdir -p artifacts
-          cp src-tauri/target/release/bundle/deb/*.deb           artifacts/ 2>/dev/null || true
-          cp src-tauri/target/release/bundle/rpm/*.rpm           artifacts/ 2>/dev/null || true
-          cp src-tauri/target/release/bundle/appimage/*.AppImage artifacts/ 2>/dev/null || true
+          cp src-tauri/target/release/bundle/deb/*.deb              artifacts/ 2>/dev/null || true
+          cp src-tauri/target/release/bundle/rpm/*.rpm              artifacts/ 2>/dev/null || true
+          cp src-tauri/target/release/bundle/appimage/*.AppImage    artifacts/ 2>/dev/null || true
+          cp src-tauri/target/release/bundle/appimage/*.sig         artifacts/ 2>/dev/null || true
 
       - name: Collect macOS artifacts
         if: matrix.platform == 'macos'
         run: |
           mkdir -p artifacts
-          cp src-tauri/target/release/bundle/dmg/*.dmg artifacts/ 2>/dev/null || true
+          cp src-tauri/target/release/bundle/dmg/*.dmg              artifacts/ 2>/dev/null || true
+          cp src-tauri/target/release/bundle/macos/*.tar.gz         artifacts/ 2>/dev/null || true
+          cp src-tauri/target/release/bundle/macos/*.sig            artifacts/ 2>/dev/null || true
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -148,12 +154,59 @@ jobs:
           path: release-artifacts
           merge-multiple: true
 
+      - name: Generate latest.json
+        shell: bash
+        run: |
+          VERSION="${{ github.ref_name }}"
+          VERSION_NO_V="${VERSION#v}"
+          BASE_URL="https://github.com/${{ github.repository }}/releases/download/$VERSION"
+          IS_BETA=$(echo "$VERSION" | grep -q "beta" && echo "true" || echo "false")
+          JSON_FILE=$([ "$IS_BETA" = "true" ] && echo "latest-beta.json" || echo "latest.json")
+
+          WIN_ZIP=$(find release-artifacts -name "*.nsis.zip" ! -name "*.sig" 2>/dev/null | head -1)
+          WIN_SIG_FILE="${WIN_ZIP}.sig"
+          WIN_NAME=$(basename "$WIN_ZIP" 2>/dev/null || echo "")
+          WIN_SIG=$([ -f "$WIN_SIG_FILE" ] && cat "$WIN_SIG_FILE" || echo "")
+
+          LIN_APP=$(find release-artifacts -name "*.AppImage" ! -name "*.sig" 2>/dev/null | head -1)
+          LIN_SIG_FILE="${LIN_APP}.sig"
+          LIN_NAME=$(basename "$LIN_APP" 2>/dev/null || echo "")
+          LIN_SIG=$([ -f "$LIN_SIG_FILE" ] && cat "$LIN_SIG_FILE" || echo "")
+
+          MAC_TAR=$(find release-artifacts -name "*.app.tar.gz" ! -name "*.sig" 2>/dev/null | head -1)
+          MAC_SIG_FILE="${MAC_TAR}.sig"
+          MAC_NAME=$(basename "$MAC_TAR" 2>/dev/null || echo "")
+          MAC_SIG=$([ -f "$MAC_SIG_FILE" ] && cat "$MAC_SIG_FILE" || echo "")
+
+          python3 - <<PYEOF
+          import json, os
+          data = {
+            "version": "$VERSION_NO_V",
+            "notes": "",
+            "pub_date": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "platforms": {}
+          }
+          base = "$BASE_URL"
+          if "$WIN_NAME" and "$WIN_SIG":
+            data["platforms"]["windows-x86_64"] = {"signature": """$WIN_SIG""", "url": f"{base}/$WIN_NAME"}
+          if "$LIN_NAME" and "$LIN_SIG":
+            data["platforms"]["linux-x86_64"] = {"signature": """$LIN_SIG""", "url": f"{base}/$LIN_NAME"}
+          if "$MAC_NAME" and "$MAC_SIG":
+            data["platforms"]["darwin-aarch64"] = {"signature": """$MAC_SIG""", "url": f"{base}/$MAC_NAME"}
+          with open("$JSON_FILE", "w") as f:
+            json.dump(data, f, indent=2)
+          print(f"Generated {os.path.abspath('$JSON_FILE')}")
+          PYEOF
+
       - name: Create draft release
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
         run: |
+          FILES=$(find release-artifacts -type f | tr '\n' ' ')
+          [ -f latest.json ]      && FILES="$FILES latest.json"
+          [ -f latest-beta.json ] && FILES="$FILES latest-beta.json"
           gh release create "${{ github.ref_name }}" \
             --title "LittleNotepad ${{ github.ref_name }}" \
             --draft \
-            $(find release-artifacts -type f | tr '\n' ' ')
+            $FILES

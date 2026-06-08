@@ -1059,49 +1059,33 @@ fn lsp_confirm_initialized(lsp_state: tauri::State<'_, LspState>, language: Stri
 }
 
 #[tauri::command]
-async fn download_update(url: String, filename: String) -> Result<String, String> {
-    let temp_path = std::env::temp_dir().join(&filename);
-    let bytes = reqwest::get(&url)
-        .await.map_err(|e| e.to_string())?
-        .bytes()
-        .await.map_err(|e| e.to_string())?;
-    std::fs::write(&temp_path, &bytes).map_err(|e| e.to_string())?;
-    Ok(temp_path.to_string_lossy().into_owned())
+async fn check_update(app: tauri::AppHandle) -> Result<Option<serde_json::Value>, String> {
+    use tauri_plugin_updater::UpdaterExt;
+    let update = app.updater_builder()
+        .build().map_err(|e| e.to_string())?
+        .check().await.map_err(|e| e.to_string())?;
+    Ok(update.map(|u| serde_json::json!({
+        "version": u.version,
+        "body": u.body,
+    })))
 }
 
 #[tauri::command]
-fn run_installer(path: String) -> Result<(), String> {
-    #[cfg(target_os = "windows")]
-    {
-        if path.to_lowercase().ends_with(".msi") {
-            std::process::Command::new("msiexec")
-                .args(["/i", &path])
-                .spawn().map_err(|e| e.to_string())?;
-        } else {
-            std::process::Command::new(&path)
-                .spawn().map_err(|e| e.to_string())?;
-        }
+async fn install_update(app: tauri::AppHandle) -> Result<(), String> {
+    use tauri_plugin_updater::UpdaterExt;
+    let update = app.updater_builder()
+        .build().map_err(|e| e.to_string())?
+        .check().await.map_err(|e| e.to_string())?;
+    if let Some(update) = update {
+        update.download_and_install(|_, _| {}, || {})
+            .await.map_err(|e| e.to_string())?;
     }
-
-    #[cfg(target_os = "macos")]
-    std::process::Command::new("open")
-        .arg(&path)
-        .spawn().map_err(|e| e.to_string())?;
-
-    #[cfg(target_os = "linux")]
-    {
-        if path.ends_with(".AppImage") {
-            use std::os::unix::fs::PermissionsExt;
-            let mut perms = std::fs::metadata(&path).map_err(|e| e.to_string())?.permissions();
-            perms.set_mode(0o755);
-            std::fs::set_permissions(&path, perms).map_err(|e| e.to_string())?;
-            std::process::Command::new(&path).spawn().map_err(|e| e.to_string())?;
-        } else {
-            std::process::Command::new("xdg-open").arg(&path).spawn().map_err(|e| e.to_string())?;
-        }
-    }
-
     Ok(())
+}
+
+#[tauri::command]
+fn restart_app(app: tauri::AppHandle) {
+    app.restart();
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -1121,6 +1105,8 @@ pub fn run() {
     );
 
     builder
+        .plugin(tauri_plugin_updater::Builder::new().build())
+        .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(
             tauri_plugin_global_shortcut::Builder::new()
@@ -1213,8 +1199,9 @@ pub fn run() {
             lsp_send,
             lsp_stop,
             lsp_confirm_initialized,
-            download_update,
-            run_installer,
+            check_update,
+            install_update,
+            restart_app,
         ])
         .run(tauri::generate_context!())
         .expect("error while running LittleNotepad");

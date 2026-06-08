@@ -1,55 +1,11 @@
 const invoke = window.__TAURI__?.core.invoke;
 const RELEASES_URL = 'https://github.com/openidle-dev/littlenotepad/releases';
-const API_URL      = 'https://api.github.com/repos/openidle-dev/littlenotepad/releases';
 
 let _getChannelLabel = () => 'Stable';
-let _getChannelValue = () => 'stable';
-let _pendingRelease  = null;
-let _platform        = 'windows';
+let _pendingUpdate   = null;
 
 export function setUpdatesChannelGetter(fn)      { _getChannelLabel = fn; }
-export function setUpdatesChannelValueGetter(fn) { _getChannelValue = fn; }
-
-function _semverGt(a, b) {
-  const parse = v => v.replace(/^v/, '').split('-')[0].split('.').map(Number);
-  const [aMaj, aMin, aPatch] = parse(a);
-  const [bMaj, bMin, bPatch] = parse(b);
-  if (aMaj !== bMaj) return aMaj > bMaj;
-  if (aMin !== bMin) return aMin > bMin;
-  return aPatch > bPatch;
-}
-
-async function _fetchLatest() {
-  const res = await fetch(API_URL, {
-    headers: { 'Accept': 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' }
-  });
-  if (!res.ok) throw new Error(`GitHub ${res.status}`);
-  const releases = await res.json();
-  const isBeta = _getChannelValue() === 'beta';
-  return releases.find(r => !r.draft && (isBeta || !r.prerelease)) ?? null;
-}
-
-function _pickAsset(release) {
-  const assets = release.assets ?? [];
-  if (_platform === 'windows') {
-    return assets.find(a => a.name.endsWith('.exe'))
-        ?? assets.find(a => a.name.endsWith('.msi'));
-  }
-  if (_platform === 'linux') {
-    return assets.find(a => a.name.endsWith('.AppImage'))
-        ?? assets.find(a => a.name.endsWith('.deb'));
-  }
-  if (_platform === 'macos') {
-    return assets.find(a => a.name.endsWith('.dmg'));
-  }
-  return null;
-}
-
-function _renderNotes(md) {
-  if (!md?.trim()) return '<p>See release notes on GitHub.</p>';
-  const esc = md.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  return `<pre style="white-space:pre-wrap;font-family:inherit;margin:0;font-size:0.92em">${esc}</pre>`;
-}
+export function setUpdatesChannelValueGetter(fn) { /* channel handled server-side via endpoint */ }
 
 function _setBadge(show) {
   const badge = document.getElementById('update-badge');
@@ -65,8 +21,7 @@ export function initUpdates() {
   const allReleases = document.getElementById('updates-all-releases');
   const footerVer   = document.getElementById('updates-footer-version');
   const okSub       = document.getElementById('updates-ok-sub');
-
-  invoke?.('get_platform').then(p => { _platform = p; }).catch(() => {});
+  const restartBtn  = document.getElementById('updates-restart');
 
   function showPage(id) {
     document.querySelectorAll('.updates-page').forEach(p =>
@@ -83,11 +38,9 @@ export function initUpdates() {
 
   async function _silentCheck() {
     try {
-      const ver     = await _loadVersion();
-      const release = await _fetchLatest();
-      if (!release) return;
-      if (ver !== 'v?' && _semverGt(release.tag_name, ver)) {
-        _pendingRelease = release;
+      const result = await invoke('check_update');
+      if (result) {
+        _pendingUpdate = result;
         _setBadge(true);
       }
     } catch {}
@@ -98,63 +51,47 @@ export function initUpdates() {
     const ver = await _loadVersion();
     if (footerVer) footerVer.textContent = `Current: ${ver} · ${_getChannelLabel()}`;
 
-    let release;
-    try { release = await _fetchLatest(); }
-    catch { showPage('updates-page-error'); return; }
-
-    if (!release) {
-      if (okSub) okSub.textContent = `LittleNotepad ${ver} — no releases published yet.`;
-      showPage('updates-page-ok');
+    let result;
+    try { result = await invoke('check_update'); }
+    catch (err) {
+      console.error('[updates] check failed:', err);
+      showPage('updates-page-error');
       return;
     }
 
-    if (ver !== 'v?' && _semverGt(release.tag_name, ver)) {
-      _pendingRelease = release;
-      _setBadge(true);
-      showUpdateAvailable(release.tag_name, `${ver} → ${release.tag_name}`, _renderNotes(release.body ?? ''));
-    } else {
-      _pendingRelease = null;
+    if (!result) {
+      _pendingUpdate = null;
       _setBadge(false);
       if (okSub) okSub.textContent = `LittleNotepad ${ver} is the latest version.`;
       showPage('updates-page-ok');
-    }
-  }
-
-  async function _downloadAndInstall() {
-    if (!_pendingRelease) return;
-    const asset = _pickAsset(_pendingRelease);
-    if (!asset) {
-      invoke?.('open_url', { url: RELEASES_URL }).catch(() => {});
       return;
     }
 
+    _pendingUpdate = result;
+    _setBadge(true);
+    _showUpdateAvailable(result.version, ver, result.body ?? '');
+  }
+
+  async function _install() {
+    if (!_pendingUpdate) return;
     showPage('updates-page-downloading');
     const progressEl = document.getElementById('updates-download-progress');
     try {
-      if (progressEl) progressEl.textContent = `Downloading ${asset.name}…`;
-      const path = await invoke('download_update', {
-        url: asset.browser_download_url,
-        filename: asset.name,
-      });
-      if (progressEl) progressEl.textContent = 'Launching installer…';
-      await invoke('run_installer', { path });
+      if (progressEl) progressEl.textContent = 'Downloading update…';
+      await invoke('install_update');
       showPage('updates-page-installing');
-    } catch {
-      invoke?.('open_url', { url: RELEASES_URL }).catch(() => {});
+    } catch (err) {
+      console.error('[updates] install failed:', err);
       showPage('updates-page-error');
     }
   }
 
   async function open() {
     overlay.style.display = 'flex';
-    if (_pendingRelease) {
+    if (_pendingUpdate) {
       const ver = await _loadVersion();
       if (footerVer) footerVer.textContent = `Current: ${ver} · ${_getChannelLabel()}`;
-      showUpdateAvailable(
-        _pendingRelease.tag_name,
-        `${ver} → ${_pendingRelease.tag_name}`,
-        _renderNotes(_pendingRelease.body ?? '')
-      );
+      _showUpdateAvailable(_pendingUpdate.version, ver, _pendingUpdate.body ?? '');
     } else {
       await _check();
     }
@@ -169,21 +106,26 @@ export function initUpdates() {
 
   document.getElementById('updates-check-again')?.addEventListener('click', _check);
   document.getElementById('updates-check-error-retry')?.addEventListener('click', _check);
-  downloadBtn?.addEventListener('click', _downloadAndInstall);
+  downloadBtn?.addEventListener('click', _install);
+  restartBtn?.addEventListener('click', () => invoke?.('restart_app').catch(() => {}));
   allReleases?.addEventListener('click', () => {
     invoke?.('open_url', { url: RELEASES_URL }).catch(() => {});
   });
 
-  // Auto-check 1 minute after startup
   setTimeout(_silentCheck, 60_000);
 
-  return { open, close, showUpdateAvailable };
+  return { open, close, showUpdateAvailable: _showUpdateAvailable };
 
-  function showUpdateAvailable(newVer, meta, whatsNew) {
-    document.getElementById('updates-new-version').textContent = newVer;
-    document.getElementById('updates-new-meta').textContent    = meta ?? '';
+  function _showUpdateAvailable(newVer, currentVer, notes) {
+    document.getElementById('updates-new-version').textContent = `v${newVer}`;
+    document.getElementById('updates-new-meta').textContent    = `${currentVer} → v${newVer}`;
     const body = document.getElementById('updates-whats-new');
-    if (body) body.innerHTML = whatsNew ?? '<p>See release notes on GitHub.</p>';
+    if (body) {
+      const esc = (notes || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      body.innerHTML = esc
+        ? `<pre style="white-space:pre-wrap;font-family:inherit;margin:0;font-size:0.92em">${esc}</pre>`
+        : '<p>See release notes on GitHub.</p>';
+    }
     showPage('updates-page-available');
   }
 }
