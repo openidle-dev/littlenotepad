@@ -44,6 +44,10 @@ jobs:
             librsvg2-dev \
             patchelf
 
+      - name: Install macOS dependencies
+        if: matrix.platform == 'macos'
+        run: brew install create-dmg
+
       - name: Install Tauri CLI
         run: cargo install tauri-cli --version "^2.11" --locked
 
