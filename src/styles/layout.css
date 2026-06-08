@@ -550,7 +550,7 @@ kbd {
 #line-numbers {
   width: var(--line-num-width);
   flex-shrink: 0;
-  padding: 0 8px 0 0;
+  padding: 0;
   text-align: right;
   background: var(--bg-base);
   color: var(--fg-muted);
@@ -558,9 +558,11 @@ kbd {
   font-size: var(--editor-font-size);
   line-height: var(--editor-line-height);
   overflow: hidden;
-  white-space: pre;
   user-select: none;
 }
+
+.line-num-row { box-sizing: border-box; padding-right: 8px; text-align: right; }
+.line-num-row.bm { color: #f97316; font-weight: 700; }
 
 /* ── Fold gutter ── */
 #fold-gutter {
