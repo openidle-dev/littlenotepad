@@ -60,6 +60,13 @@ jobs:
           path: ~\AppData\Local\tauri
           key: tauri-tools-windows
 
+      - name: Cache Tauri tools (AppImage)
+        if: matrix.platform == 'linux'
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/share/tauri
+          key: tauri-tools-linux
+
       - name: Install macOS dependencies
         if: matrix.platform == 'macos'
         run: brew install create-dmg
