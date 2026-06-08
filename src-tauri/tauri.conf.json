@@ -39,7 +39,7 @@
   },
   "plugins": {
     "updater": {
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IENCNThEQTJCMUVBMDQxQTMKUldTalFhQWVLOXBZeTdrbnkvV3FISjFpMnlqNkRJendzZEkweVRVUnVJZDBVYytEVHFlSUtKUTcK",
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDc1MTU1RTg4MzExQjM2MzkKUldRNU5oc3hpRjRWZGNsYVVVdFRGMXdPYTB6bXI3UHhETVoxVTNxVUZMbE8vVXRLUXdVZENpM2kK",
       "endpoints": [
         "https://github.com/openidle-dev/littlenotepad/releases/latest/download/latest.json"
       ],
