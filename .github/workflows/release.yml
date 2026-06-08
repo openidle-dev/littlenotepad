@@ -44,6 +44,21 @@ jobs:
             librsvg2-dev \
             patchelf
 
+      - name: Install Windows dependencies
+        if: matrix.platform == 'windows'
+        shell: pwsh
+        run: |
+          choco install wixtoolset --no-progress -y
+          $wix = Get-ChildItem "C:\Program Files (x86)" -Filter "WiX Toolset*" -ErrorAction SilentlyContinue | Select-Object -First 1
+          if ($wix) { "$($wix.FullName)\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append }
+
+      - name: Cache Tauri tools (WiX)
+        if: matrix.platform == 'windows'
+        uses: actions/cache@v4
+        with:
+          path: ~\AppData\Local\tauri
+          key: tauri-tools-windows
+
       - name: Install macOS dependencies
         if: matrix.platform == 'macos'
         run: brew install create-dmg
