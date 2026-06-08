@@ -32,8 +32,8 @@ async function _fetchLatest() {
 function _pickAsset(release) {
   const assets = release.assets ?? [];
   if (_platform === 'windows') {
-    return assets.find(a => a.name.endsWith('.msi'))
-        ?? assets.find(a => a.name.endsWith('.exe'));
+    return assets.find(a => a.name.endsWith('.exe'))
+        ?? assets.find(a => a.name.endsWith('.msi'));
   }
   if (_platform === 'linux') {
     return assets.find(a => a.name.endsWith('.AppImage'))
