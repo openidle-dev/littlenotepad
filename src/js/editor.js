@@ -39,6 +39,7 @@ export function initEditor(state, tabs) {
   let findMarks    = [];
   let mcMarks      = [];
   let diagMarks    = [];   // LSP diagnostic underlines
+  const _bmarks    = new Map(); // key → Set<lineNumber (1-based)>
 
   let _lspClient       = null;
   let _lspChangeTimer  = null;
@@ -1023,6 +1024,24 @@ export function initEditor(state, tabs) {
       return;
     }
 
+    if (e.key.toLowerCase() === 'b' && e.ctrlKey && !e.shiftKey && !e.altKey) {
+      e.preventDefault();
+      toggleBookmark();
+      return;
+    }
+
+    if (e.key === 'F2' && e.ctrlKey && !e.shiftKey) {
+      e.preventDefault();
+      nextBookmark(1);
+      return;
+    }
+
+    if (e.key === 'F2' && e.ctrlKey && e.shiftKey) {
+      e.preventDefault();
+      nextBookmark(-1);
+      return;
+    }
+
     const pairs = { '(': ')', '[': ']', '{': '}', '"': '"', "'": "'" };
     if (pairs[e.key] && !e.ctrlKey && !e.metaKey) {
       const start      = textarea.selectionStart;
@@ -1072,9 +1091,52 @@ export function initEditor(state, tabs) {
     drawIndentGuides();
   }
 
+  function _bmarkKey() {
+    if (state.activeFile) return state.activeFile;
+    const tab = document.querySelector('#tab-list .tab.active');
+    return tab ? `@ut:${tab.dataset.name}` : null;
+  }
+
+  function _currentBmarks() {
+    const key = _bmarkKey();
+    if (!key) return new Set();
+    if (!_bmarks.has(key)) _bmarks.set(key, new Set());
+    return _bmarks.get(key);
+  }
+
+  function _cursorLine() {
+    return (textarea.value.substring(0, textarea.selectionStart).match(/\n/g) ?? []).length + 1;
+  }
+
+  function toggleBookmark() {
+    const key = _bmarkKey();
+    if (!key) return;
+    if (!_bmarks.has(key)) _bmarks.set(key, new Set());
+    const set  = _bmarks.get(key);
+    const line = _cursorLine();
+    if (set.has(line)) set.delete(line); else set.add(line);
+    updateLineNumbers(textarea.value);
+  }
+
+  function nextBookmark(dir = 1) {
+    const set = _currentBmarks();
+    if (!set.size) return;
+    const sorted = [...set].sort((a, b) => a - b);
+    const cur    = _cursorLine();
+    const target = dir > 0
+      ? (sorted.find(l => l > cur) ?? sorted[0])
+      : ([...sorted].reverse().find(l => l < cur) ?? sorted[sorted.length - 1]);
+    goToLine(target);
+  }
+
   function updateLineNumbers(text) {
     const count = (text.match(/\n/g) ?? []).length + 1;
-    lineNums.textContent = Array.from({ length: count }, (_, i) => i + 1).join('\n');
+    const lineH = parseFloat(getComputedStyle(textarea).lineHeight) || 21;
+    const bm    = _currentBmarks();
+    lineNums.innerHTML = Array.from({ length: count }, (_, i) => {
+      const n = i + 1;
+      return `<div class="line-num-row${bm.has(n) ? ' bm' : ''}" style="height:${lineH}px;line-height:${lineH}px">${n}</div>`;
+    }).join('');
   }
 
   function updateStatusLang(lang) {
@@ -1992,5 +2054,7 @@ export function initEditor(state, tabs) {
     getTextarea, getSyncScroll, getUpdateCursor, showFileChangedBanner,
     setDiagnostics, notifyLspReady, setLspClientRef,
     goToDefinition, renameSymbol,
+    getFileBookmarks: (path) => path && _bmarks.has(path) ? [..._bmarks.get(path)] : [],
+    setFileBookmarks: (path, lines) => { if (path && lines?.length) _bmarks.set(path, new Set(lines)); },
   };
 }

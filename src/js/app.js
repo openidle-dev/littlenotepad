@@ -330,6 +330,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           scrollTop:  f?.scrollTop  ?? 0,
           scrollLeft: f?.scrollLeft ?? 0,
           pinned:     tab.classList.contains('pinned'),
+          bookmarks:  editor.getFileBookmarks(tab.dataset.path),
         });
       }
       const active = state.activeFile ?? '';
@@ -430,6 +431,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const name = t.path.replace(/\\/g, '/').split('/').pop() || t.path;
             await tabs.openFile(t.path, name, { activate: false, cursorPos: t.cursorPos, scrollTop: t.scrollTop, scrollLeft: t.scrollLeft });
             if (t.pinned) tabs.setPinnedByPath(t.path);
+            if (t.bookmarks?.length) editor.setFileBookmarks(t.path, t.bookmarks);
             _applyDirtyRestore(t.path, dirtyRestoreMap);
           }
           if (active) {
@@ -437,6 +439,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const t = tabEntries.find(e => e.path === active);
             await tabs.openFile(active, name, { activate: true, cursorPos: t?.cursorPos ?? 0, scrollTop: t?.scrollTop ?? 0, scrollLeft: t?.scrollLeft ?? 0 });
             if (t?.pinned) tabs.setPinnedByPath(active);
+            if (t?.bookmarks?.length) editor.setFileBookmarks(active, t.bookmarks);
             _applyDirtyRestore(active, dirtyRestoreMap);
           }
         } catch (e) { console.error('Session restore failed:', e); }
