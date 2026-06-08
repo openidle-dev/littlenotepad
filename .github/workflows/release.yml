@@ -44,6 +44,10 @@ jobs:
             librsvg2-dev \
             patchelf
 
+      - name: Install Windows dependencies
+        if: matrix.platform == 'windows'
+        run: choco install wixtoolset --no-progress -y
+
       - name: Install macOS dependencies
         if: matrix.platform == 'macos'
         run: brew install create-dmg
