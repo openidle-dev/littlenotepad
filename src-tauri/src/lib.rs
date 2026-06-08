@@ -1072,8 +1072,16 @@ async fn download_update(url: String, filename: String) -> Result<String, String
 #[tauri::command]
 fn run_installer(path: String) -> Result<(), String> {
     #[cfg(target_os = "windows")]
-    std::process::Command::new(&path)
-        .spawn().map_err(|e| e.to_string())?;
+    {
+        if path.to_lowercase().ends_with(".msi") {
+            std::process::Command::new("msiexec")
+                .args(["/i", &path])
+                .spawn().map_err(|e| e.to_string())?;
+        } else {
+            std::process::Command::new(&path)
+                .spawn().map_err(|e| e.to_string())?;
+        }
+    }
 
     #[cfg(target_os = "macos")]
     std::process::Command::new("open")
