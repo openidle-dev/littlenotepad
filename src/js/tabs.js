@@ -1,9 +1,27 @@
 const invoke = window.__TAURI__?.core.invoke;
 
 export function initTabs(state) {
-  const tabList = document.getElementById('tab-list');
-  let tabIdSeq  = 0;
+  const tabList           = document.getElementById('tab-list');
+  const fileMissingOverlay = document.getElementById('file-missing-overlay');
+  const fileMissingName    = document.getElementById('file-missing-name');
+  let tabIdSeq    = 0;
   let _draggedTab = null;
+  let _fileMissingTab = null;
+
+  function _closeFileMissingDialog() {
+    fileMissingOverlay.style.display = 'none';
+    if (_fileMissingTab) { const t = _fileMissingTab; _fileMissingTab = null; closeTab(t); }
+  }
+  document.getElementById('file-missing-close')?.addEventListener('click', _closeFileMissingDialog);
+  document.getElementById('file-missing-backdrop')?.addEventListener('click', _closeFileMissingDialog);
+
+  function _showFileMissing(filePath, fileName) {
+    const tab = filePath ? findTabByPath(filePath) : tabList.querySelector('.tab.active');
+    if (!tab) return;
+    _fileMissingTab = tab;
+    fileMissingName.textContent = fileName ?? tab.dataset.name;
+    fileMissingOverlay.style.display = 'flex';
+  }
 
   document.getElementById('btn-new-file').addEventListener('click', newUntitled);
 
@@ -24,6 +42,12 @@ export function initTabs(state) {
       try {
         content = await invoke('read_file', { path: filePath });
       } catch (err) {
+        const mtime = await invoke('get_file_mtime', { path: filePath }).catch(() => null);
+        if (mtime == null) {
+          if (activate) activateByPath(filePath, '');
+          _showFileMissing(filePath, fileName);
+          return;
+        }
         content = `// Could not read file: ${err}\n`;
       }
     }
@@ -65,8 +89,16 @@ export function initTabs(state) {
     tab.append(nameSpan, dirtyDot, pinIcon, closeBtn);
     tabList.appendChild(tab);
 
-    tab.addEventListener('click', (e) => {
+    tab.addEventListener('click', async (e) => {
       if (e.target === closeBtn) return;
+      const filePath = tab.dataset.path;
+      if (filePath && invoke) {
+        const mtime = await invoke('get_file_mtime', { path: filePath }).catch(() => null);
+        if (mtime == null) {
+          _showFileMissing(filePath, tab.dataset.name);
+          return;
+        }
+      }
       activateTab(tab);
     });
 
@@ -263,5 +295,7 @@ export function initTabs(state) {
     if (!isNaN(num) && num >= tabIdSeq) tabIdSeq = num;
   }
 
-  return { openFile, newUntitled, restoreUntitled, setDirty, closeActiveTab, closeAll, renameTab, togglePinByPath, setPinnedByPath };
+  function notifyFileMissing(path) { _showFileMissing(path, null); }
+
+  return { openFile, newUntitled, restoreUntitled, setDirty, closeActiveTab, closeAll, renameTab, togglePinByPath, setPinnedByPath, notifyFileMissing };
 }
