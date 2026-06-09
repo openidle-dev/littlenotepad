@@ -491,7 +491,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (_ignored.has(path)) continue;
       try {
         const mtime = await invoke('get_file_mtime', { path });
-        if (mtime == null) continue;
+        if (mtime == null) {
+          if (path === state.activeFile) tabs.notifyFileMissing(path);
+          continue;
+        }
         const prev = _mtimes.get(path);
         _mtimes.set(path, mtime);
         if (prev != null && mtime !== prev && path === state.activeFile) {
