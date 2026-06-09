@@ -719,6 +719,57 @@ kbd {
 }
 #file-changed-banner button:hover { background: #5a4d00; }
 
+#file-missing-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#file-missing-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+}
+#file-missing-dialog {
+  position: relative;
+  background: var(--bg-palette);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 20px 22px;
+  width: 340px;
+  max-width: calc(100vw - 40px);
+  box-shadow: 0 8px 28px rgba(0,0,0,0.5);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+#file-missing-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #f08080;
+}
+#file-missing-body {
+  font-size: 12px;
+  color: var(--fg-muted);
+  line-height: 1.5;
+}
+#file-missing-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+#file-missing-actions button {
+  padding: 4px 14px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: var(--bg-input);
+  color: var(--fg);
+  cursor: pointer;
+  font-size: 12px;
+}
+#file-missing-actions button:hover { background: var(--bg-hover); }
+
 /* Tab drag-to-reorder */
 .tab.dragging { opacity: 0.4; }
 .tab.drag-target { outline: 2px solid var(--accent); outline-offset: -2px; }
