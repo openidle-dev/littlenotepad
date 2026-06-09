@@ -356,6 +356,16 @@ body {
 .tab-close:hover { color: var(--fg-active); background: rgba(255,255,255,0.1); }
 
 .tab-pin-icon { display: none; align-items: center; opacity: 0.55; margin-right: 2px; }
+
+.tab-error-badge {
+  display: none;
+  font-size: 10px;
+  font-weight: 600;
+  color: #f14c4c;
+  flex-shrink: 0;
+  margin-right: 2px;
+  line-height: 1;
+}
 .tab.pinned .tab-pin-icon { display: flex; }
 .tab.pinned { font-style: italic; }
 

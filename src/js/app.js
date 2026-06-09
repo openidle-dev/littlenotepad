@@ -43,6 +43,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     language: 'python',
     onDiagnostics: (uri, diags) => {
       editor.setDiagnostics?.(uri, diags);
+      const filePath = uri.replace(/^file:\/\/\//, '').replace(/^file:\/\//, '').replace(/\//g, '\\');
+      const errorCount = diags.filter(d => d.severity === 1).length;
+      tabs.setErrorCount(filePath, errorCount);
     },
     onStatus: (status) => {
       const badge = document.getElementById('status-lsp');
