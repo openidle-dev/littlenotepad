@@ -1058,10 +1058,57 @@ fn lsp_confirm_initialized(lsp_state: tauri::State<'_, LspState>, language: Stri
     }
 }
 
+static PENDING_MANIFEST_URL: std::sync::OnceLock<std::sync::Mutex<Option<String>>> =
+    std::sync::OnceLock::new();
+
+fn pending_manifest() -> &'static std::sync::Mutex<Option<String>> {
+    PENDING_MANIFEST_URL.get_or_init(|| std::sync::Mutex::new(None))
+}
+
+fn read_update_channel(app: &tauri::AppHandle) -> String {
+    let path = prefs_path(app);
+    let content = std::fs::read_to_string(&path).unwrap_or_default();
+    let prefs: serde_json::Value = serde_json::from_str(&content).unwrap_or(serde_json::json!({}));
+    let settings_str = prefs["settings"].as_str().unwrap_or("{}");
+    let settings: serde_json::Value = serde_json::from_str(settings_str).unwrap_or(serde_json::json!({}));
+    settings["updateChannel"].as_str().unwrap_or("stable").to_string()
+}
+
+async fn fetch_manifest_url(beta: bool) -> Result<String, String> {
+    let client = reqwest::Client::builder()
+        .user_agent("LittleNotepad-Updater/1.0")
+        .build().map_err(|e| e.to_string())?;
+
+    let releases: Vec<serde_json::Value> = client
+        .get("https://api.github.com/repos/openidle-dev/littlenotepad/releases")
+        .send().await.map_err(|e| e.to_string())?
+        .json().await.map_err(|e| e.to_string())?;
+
+    for release in &releases {
+        let is_pre = release["prerelease"].as_bool().unwrap_or(false);
+        if !beta && is_pre { continue; }
+        if let Some(assets) = release["assets"].as_array() {
+            for asset in assets {
+                if asset["name"].as_str() == Some("latest.json") {
+                    if let Some(url) = asset["browser_download_url"].as_str() {
+                        return Ok(url.to_string());
+                    }
+                }
+            }
+        }
+    }
+    Err("No update manifest found in releases".to_string())
+}
+
 #[tauri::command]
 async fn check_update(app: tauri::AppHandle) -> Result<Option<serde_json::Value>, String> {
     use tauri_plugin_updater::UpdaterExt;
+    let beta = read_update_channel(&app) == "beta";
+    let manifest_url = fetch_manifest_url(beta).await?;
+    *pending_manifest().lock().unwrap() = Some(manifest_url.clone());
+    let url = url::Url::parse(&manifest_url).map_err(|e| e.to_string())?;
     let update = app.updater_builder()
+        .endpoints(vec![url]).map_err(|e| e.to_string())?
         .build().map_err(|e| e.to_string())?
         .check().await.map_err(|e| e.to_string())?;
     Ok(update.map(|u| serde_json::json!({
@@ -1073,7 +1120,11 @@ async fn check_update(app: tauri::AppHandle) -> Result<Option<serde_json::Value>
 #[tauri::command]
 async fn install_update(app: tauri::AppHandle) -> Result<(), String> {
     use tauri_plugin_updater::UpdaterExt;
+    let manifest_url = pending_manifest().lock().unwrap().clone()
+        .ok_or_else(|| "No pending update — run check_update first".to_string())?;
+    let url = url::Url::parse(&manifest_url).map_err(|e| e.to_string())?;
     let update = app.updater_builder()
+        .endpoints(vec![url]).map_err(|e| e.to_string())?
         .build().map_err(|e| e.to_string())?
         .check().await.map_err(|e| e.to_string())?;
     if let Some(update) = update {
