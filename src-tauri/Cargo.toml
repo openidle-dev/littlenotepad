@@ -1,6 +1,6 @@
 [package]
 name = "littlenotepad"
-version = "1.0.2"
+version = "0.0.0"
 description = "LittleNotepad code editor"
 authors = []
 license = "MIT"

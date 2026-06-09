@@ -1074,7 +1074,7 @@ fn read_update_channel(app: &tauri::AppHandle) -> String {
     settings["updateChannel"].as_str().unwrap_or("stable").to_string()
 }
 
-async fn fetch_manifest_url(beta: bool) -> Result<String, String> {
+async fn fetch_manifest_url(beta: bool) -> Result<Option<String>, String> {
     let client = reqwest::Client::builder()
         .user_agent("LittleNotepad-Updater/1.0")
         .build().map_err(|e| e.to_string())?;
@@ -1091,20 +1091,23 @@ async fn fetch_manifest_url(beta: bool) -> Result<String, String> {
             for asset in assets {
                 if asset["name"].as_str() == Some("latest.json") {
                     if let Some(url) = asset["browser_download_url"].as_str() {
-                        return Ok(url.to_string());
+                        return Ok(Some(url.to_string()));
                     }
                 }
             }
         }
     }
-    Err("No update manifest found in releases".to_string())
+    Ok(None)
 }
 
 #[tauri::command]
 async fn check_update(app: tauri::AppHandle) -> Result<Option<serde_json::Value>, String> {
     use tauri_plugin_updater::UpdaterExt;
     let beta = read_update_channel(&app) == "beta";
-    let manifest_url = fetch_manifest_url(beta).await?;
+    let manifest_url = match fetch_manifest_url(beta).await? {
+        Some(u) => u,
+        None => return Ok(None),
+    };
     *pending_manifest().lock().unwrap() = Some(manifest_url.clone());
     let url = url::Url::parse(&manifest_url).map_err(|e| e.to_string())?;
     let update = app.updater_builder()

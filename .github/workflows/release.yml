@@ -148,6 +148,11 @@ jobs:
       contents: write
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
@@ -163,9 +168,9 @@ jobs:
           IS_BETA=$(echo "$VERSION" | grep -q "beta" && echo "true" || echo "false")
           JSON_FILE=$([ "$IS_BETA" = "true" ] && echo "latest-beta.json" || echo "latest.json")
 
-          WIN_ZIP=$(find release-artifacts -name "*.nsis.zip" ! -name "*.sig" 2>/dev/null | head -1)
-          WIN_SIG_FILE="${WIN_ZIP}.sig"
-          WIN_NAME=$(basename "$WIN_ZIP" 2>/dev/null || echo "")
+          WIN_EXE=$(find release-artifacts -name "*-setup.exe" 2>/dev/null | head -1)
+          WIN_SIG_FILE="${WIN_EXE}.sig"
+          WIN_NAME=$(basename "$WIN_EXE" 2>/dev/null || echo "")
           WIN_SIG=$([ -f "$WIN_SIG_FILE" ] && cat "$WIN_SIG_FILE" || echo "")
 
           LIN_APP=$(find release-artifacts -name "*.AppImage" ! -name "*.sig" 2>/dev/null | head -1)
@@ -198,6 +203,13 @@ jobs:
           print(f"Generated {os.path.abspath('$JSON_FILE')}")
           PYEOF
 
+      - name: Prepare release notes
+        shell: bash
+        run: |
+          CURRENT="${{ github.ref_name }}"
+          PREV_TAG=$(git tag --sort=-version:refname | grep -v "^${CURRENT}$" | head -1 || echo "")
+          sed "s|\$PREVIOUS_TAG|${PREV_TAG}|g; s|\$CURRENT_TAG|${CURRENT}|g" .github/RELEASE_TEMPLATE.md > release-notes.md
+
       - name: Create draft release
         env:
           GH_TOKEN: ${{ github.token }}
@@ -209,4 +221,5 @@ jobs:
           gh release create "${{ github.ref_name }}" \
             --title "LittleNotepad ${{ github.ref_name }}" \
             --draft \
+            --notes-file release-notes.md \
             $FILES
